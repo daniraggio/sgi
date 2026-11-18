@@ -3,9 +3,11 @@ export function validateContract(input){
  const number=k=>{const v=input[k];if(typeof v!=='number'||!Number.isFinite(v)||v<0)throw new Error('Valor inválido: '+k);return v};
  const month=k=>{const v=text(k,7);if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(v))throw new Error('Mes inválido');return v};
  const society=text('society'),kind=text('kind');if(!['OESC','OECC'].includes(society)||!['energy','power'].includes(kind))throw new Error('Sociedad o producto inválido');
+ const psContract=input.psContract==null?'':String(input.psContract).trim();
+ if(psContract&&!/^\d{1,30}$/.test(psContract))throw Error('Contrato PS inválido: usá solo números.');
  const priority=input.priority??null;
  if(priority!==null&&(!Number.isInteger(priority)||priority<1||priority>99))throw new Error("La prioridad debe ser un entero entre 1 y 99");
- const c={society,kind,priority,client:text('client'),nemo:text('nemo'),supplier:text('supplier'),start:month('start'),end:month('end'),volume:number('volume'),summerPrice:number('summerPrice'),winterPrice:number('winterPrice'),active:input.active!==false};
+ const c={society,kind,priority,psContract,client:text('client'),nemo:text('nemo'),supplier:text('supplier'),start:month('start'),end:month('end'),volume:number('volume'),summerPrice:number('summerPrice'),winterPrice:number('winterPrice'),active:input.active!==false};
  if(c.start>c.end||months(c.start,c.end).length>120)throw new Error('El plazo debe ser de 1 a 120 meses');
  for(const key of ['monthlyVolumes','monthlyPrices']){c[key]={};if(input[key]&&typeof input[key]==='object'&&!Array.isArray(input[key]))for(const [m,v] of Object.entries(input[key])){if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(m)||m<c.start||m>c.end||typeof v!=='number'||!Number.isFinite(v)||v<0)throw new Error('Detalle mensual inválido');c[key][m]=v;}}
  return c;
@@ -57,4 +59,27 @@ export function simulateEnergy(state){
   }
  }
  return {periods,groups,operations};
+}
+
+export function parseCellNumber(value){
+ const text=String(value).trim();if(!/^\d+(?:[.,]\d+)?$/.test(text))throw Error('Ingresá un número positivo o cero, sin separador de miles.');
+ const n=Number(text.replace(',','.'));if(!Number.isFinite(n))throw Error('Valor inválido');return n;
+}
+export function editContractMonth(contract,month,field,value){
+ if(!['volume','price'].includes(field)||!/^20\d{2}-(0[1-9]|1[0-2])$/.test(month)||month<contract.start||month>contract.end||month<'2026-10')throw Error('Mes o campo fuera del contrato proyectado');
+ if(!contract.active)throw Error('El contrato está archivado');
+ if(field==='volume'&&contract.linkedDemand)throw Error('Este tope se calcula con los contratos de OESC abastecidos por Alto Valle. Editá esos contratos.');
+ if(typeof value!=='number'||!Number.isFinite(value)||value<0)throw Error('Valor inválido');
+ const copy=structuredClone(contract),key=field==='volume'?'monthlyVolumes':'monthlyPrices';copy[key]??={};copy[key][month]=value;return {...copy,...validateContract(copy)};
+}
+export function projectPower(state){
+ const rows=state.contracts.filter(c=>c.active&&c.kind==='power').flatMap(c=>schedule(c).filter(s=>s.month>='2026-10').map(s=>({contractId:c.id,society:c.society,supplier:c.supplier,client:c.client,nemo:c.nemo,month:s.month,kind:'power',q:s.q,price:s.price,revenue:s.income,interco:false,intercoTarget:null,status:'Proyección',source:'Contrato · '+c.source})));
+ const oesc=rows.filter(o=>o.society==='OESC'),oecc=rows.filter(o=>o.society==='OECC');
+ for(const month of [...new Set(oesc.map(o=>o.month))]){const q=oesc.filter(o=>o.month===month&&o.supplier==='OECC · Alto Valle').reduce((n,o)=>n+o.q,0);if(q)oecc.push({society:'OECC',supplier:'OECC · Alto Valle',client:'OESC',nemo:'DUKECOMO',month,kind:'power',q,price:13,revenue:q*13,interco:true,intercoTarget:'OESC',status:'Proyección',source:'OECC → OESC · contratos de potencia a 13 USD/MW-hrp'});}
+ return {oesc,oecc};
+}
+
+export function billingTerms(state,contract){
+ const nemos=contract.nemo.split(' / '),profile=(state.billingProfiles||[]).find(p=>p.society===contract.society&&nemos.every(n=>p.nemos.includes(n)));
+ return {psContract:contract.psContract||profile?.psContract||'',powerPrice:profile?.powerPrice??null};
 }
