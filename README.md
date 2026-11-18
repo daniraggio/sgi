@@ -73,3 +73,14 @@ La regla reproduce MATE-OESC filas 45–57 y MATE-OECC filas 30–38 del archivo
 Santa Rosa conserva octubre de 2026 en **1.080 MWh**, y Chepes **120 MWh/mes hasta enero de 2027**. El excedente de Santa Rosa se valoriza a 40,80 USD/MWh; los demás excedentes se muestran sin inventar una venta. Los importes conservan las reglas comerciales confirmadas y la precisión completa; la pantalla redondea los MWh.
 
 `PUT /api/generation` usa la misma autenticación, validación de origen, revisión y SHA que los contratos. La auditoría registra generador, mes y valor. Una revisión obsoleta no sobrescribe cambios.
+
+## Referencias de energía suministrada en DTE
+
+En **Histórico real → Fuentes DTE de energía suministrada** se indica la parte del DTE utilizada para contrastar los volúmenes, con enlaces a los archivos originales de SharePoint. Se mantienen los precios y volúmenes de la planilla de facturación. El tablero no muestra alertas ni listas de diferencias.
+
+- OESC hasta julio: `MATRenov.ENERGIA_CONT`, filtro `AGENTE_COM=DUKECOMO`, agrupado por generador, conjunto y demandante.
+- OECC julio: `ANEXO_MAT_CONTRATOS.TOTAL_MWH`, filtros `AGENTE_G=CTALVALG`, `CONJUNTO=CTALV003`, cruce por comercializador y demandante.
+- Agosto: complemento DTE II `Contratos_R400_2026-08_V2.xlsx`, hoja `MATE-MATER MENSUAL`, columna P (Energía Total, MWh). Se toma el complemento como fuente del detalle, sin sumarlo al Access.
+- Septiembre: `MATE_MATER.ENERGIA_TOTAL`. Se suman registros de contratos y unidades; las facturas a comercializadoras se contrastan agrupando `COMERCIA`.
+
+`source_data/dte_sources.json` contiene solo referencias y versiones de los archivos usados, con sus hashes; no contiene registros de entregas extraídos de los DTE. No se usan importes del DTE para modificar precios de la planilla. El histórico contrastado llega a septiembre de 2026; la energía de octubre en adelante sigue siendo una simulación hasta incorporar el DTE correspondiente.

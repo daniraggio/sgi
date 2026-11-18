@@ -62,7 +62,7 @@ for c in range(18,46):
  generation=e[7][c-1];commercial=e[8][c-1];contracted=e[26][c-1]
  if not isinstance(generation,(int,float)):continue
  oecc_capacity.append(dict(month=date,generation=generation,commercial=commercial,contracted=contracted,delivered=e[43][c-1],source=f'MATE-OECC!{col(c)}8, {col(c)}9, {col(c)}27, {col(c)}44'))
-data=dict(oeccCapacity=oecc_capacity,oescPower=oesc_power,oeccEnergyCosts=seasonal_costs,oeccSpotCosts=spot_costs,months=months,ops=ops,purchases=purchases,spot=spot,power=power,forecast=forecast,calibration=calibration,oecc=oecc_actual+oecc_forecast)
+data=dict(dteSources=json.loads((pathlib.Path(__file__).parent/'source_data/dte_sources.json').read_text()),oeccCapacity=oecc_capacity,oescPower=oesc_power,oeccEnergyCosts=seasonal_costs,oeccSpotCosts=spot_costs,months=months,ops=ops,purchases=purchases,spot=spot,power=power,forecast=forecast,calibration=calibration,oecc=oecc_actual+oecc_forecast)
 (pathlib.Path(__file__).parent/'data.json').write_text(json.dumps(data,ensure_ascii=False))
 template=(pathlib.Path(__file__).parent/'template.html').read_text()
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'forecast.html').read_text()+'<section id="overview"')
@@ -71,6 +71,6 @@ template=template.replace('<section id="overview"', (pathlib.Path(__file__).pare
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'oecc_extra.html').read_text()+'<section id="overview"')
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'contracts.html').read_text()+'<section id="overview"')
 template=template.replace('<link rel="stylesheet" href="/contracts.css">','<style>'+(pathlib.Path(__file__).parent/'contracts.css').read_text()+'</style>')
-template=template.replace('</body>', '<script>'+(pathlib.Path(__file__).parent/'forecast.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'portfolio.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_view.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_extra.js').read_text()+'</script><script type="module" src="/contracts.js"></script></body>')
+template=template.replace('</body>', '<script>'+(pathlib.Path(__file__).parent/'forecast.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'portfolio.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_view.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_extra.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'dte_audit.js').read_text()+'</script><script type="module" src="/contracts.js"></script></body>')
 (pathlib.Path(__file__).parent/'dist/index.html').write_text(template.replace('__DATA__',json.dumps(data,ensure_ascii=False)))
 print(json.dumps({'months':len(months),'operations':len(ops),'margin_usd':sum(x['margin'] for x in months),'mwh':sum(x['q'] for x in months)}))
