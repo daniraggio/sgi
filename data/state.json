@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "revision": 1,
+  "schemaVersion": 2,
+  "revision": 2,
   "contracts": [
     {
       "id": "3dbd06454f0bea52",
@@ -28,7 +28,8 @@
       },
       "source": "MATE-OESC · fila 11",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "28303f57f45dd16d",
@@ -70,41 +71,42 @@
         "2028-12": 100,
         "2029-01": 100
       },
-      "summerPrice": 58.0,
-      "winterPrice": 58.0,
+      "summerPrice": 58,
+      "winterPrice": 58,
       "monthlyPrices": {
-        "2026-10": 58.0,
-        "2026-11": 58.0,
-        "2026-12": 58.0,
-        "2027-01": 58.0,
-        "2027-02": 58.0,
-        "2027-03": 58.0,
-        "2027-04": 58.0,
-        "2027-05": 58.0,
-        "2027-06": 58.0,
-        "2027-07": 58.0,
-        "2027-08": 58.0,
-        "2027-09": 58.0,
-        "2027-10": 58.0,
-        "2027-11": 58.0,
-        "2027-12": 58.0,
-        "2028-01": 58.0,
-        "2028-02": 58.0,
-        "2028-03": 58.0,
-        "2028-04": 58.0,
-        "2028-05": 58.0,
-        "2028-06": 58.0,
-        "2028-07": 58.0,
-        "2028-08": 58.0,
-        "2028-09": 58.0,
-        "2028-10": 58.0,
-        "2028-11": 58.0,
-        "2028-12": 58.0,
-        "2029-01": 58.0
+        "2026-10": 58,
+        "2026-11": 58,
+        "2026-12": 58,
+        "2027-01": 58,
+        "2027-02": 58,
+        "2027-03": 58,
+        "2027-04": 58,
+        "2027-05": 58,
+        "2027-06": 58,
+        "2027-07": 58,
+        "2027-08": 58,
+        "2027-09": 58,
+        "2027-10": 58,
+        "2027-11": 58,
+        "2027-12": 58,
+        "2028-01": 58,
+        "2028-02": 58,
+        "2028-03": 58,
+        "2028-04": 58,
+        "2028-05": 58,
+        "2028-06": 58,
+        "2028-07": 58,
+        "2028-08": 58,
+        "2028-09": 58,
+        "2028-10": 58,
+        "2028-11": 58,
+        "2028-12": 58,
+        "2029-01": 58
       },
       "source": "MATE-OESC · fila 24",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "4ebb92568362026c",
@@ -146,41 +148,42 @@
         "2028-12": 30,
         "2029-01": 30
       },
-      "summerPrice": 58.0,
-      "winterPrice": 58.0,
+      "summerPrice": 58,
+      "winterPrice": 58,
       "monthlyPrices": {
-        "2026-10": 58.0,
-        "2026-11": 58.0,
-        "2026-12": 58.0,
-        "2027-01": 58.0,
-        "2027-02": 58.0,
-        "2027-03": 58.0,
-        "2027-04": 58.0,
-        "2027-05": 58.0,
-        "2027-06": 58.0,
-        "2027-07": 58.0,
-        "2027-08": 58.0,
-        "2027-09": 58.0,
-        "2027-10": 58.0,
-        "2027-11": 58.0,
-        "2027-12": 58.0,
-        "2028-01": 58.0,
-        "2028-02": 58.0,
-        "2028-03": 58.0,
-        "2028-04": 58.0,
-        "2028-05": 58.0,
-        "2028-06": 58.0,
-        "2028-07": 58.0,
-        "2028-08": 58.0,
-        "2028-09": 58.0,
-        "2028-10": 58.0,
-        "2028-11": 58.0,
-        "2028-12": 58.0,
-        "2029-01": 58.0
+        "2026-10": 58,
+        "2026-11": 58,
+        "2026-12": 58,
+        "2027-01": 58,
+        "2027-02": 58,
+        "2027-03": 58,
+        "2027-04": 58,
+        "2027-05": 58,
+        "2027-06": 58,
+        "2027-07": 58,
+        "2027-08": 58,
+        "2027-09": 58,
+        "2027-10": 58,
+        "2027-11": 58,
+        "2027-12": 58,
+        "2028-01": 58,
+        "2028-02": 58,
+        "2028-03": 58,
+        "2028-04": 58,
+        "2028-05": 58,
+        "2028-06": 58,
+        "2028-07": 58,
+        "2028-08": 58,
+        "2028-09": 58,
+        "2028-10": 58,
+        "2028-11": 58,
+        "2028-12": 58,
+        "2029-01": 58
       },
       "source": "MATE-OESC · fila 25",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "a8eec2903f7b0a0f",
@@ -222,41 +225,42 @@
         "2028-12": 700,
         "2029-01": 770
       },
-      "summerPrice": 59.0,
-      "winterPrice": 59.0,
+      "summerPrice": 59,
+      "winterPrice": 59,
       "monthlyPrices": {
-        "2026-10": 59.0,
-        "2026-11": 59.0,
-        "2026-12": 59.0,
-        "2027-01": 59.0,
-        "2027-02": 59.0,
-        "2027-03": 59.0,
-        "2027-04": 59.0,
-        "2027-05": 59.0,
-        "2027-06": 59.0,
-        "2027-07": 59.0,
-        "2027-08": 59.0,
-        "2027-09": 59.0,
-        "2027-10": 59.0,
-        "2027-11": 59.0,
-        "2027-12": 59.0,
-        "2028-01": 59.0,
-        "2028-02": 59.0,
-        "2028-03": 59.0,
-        "2028-04": 59.0,
-        "2028-05": 59.0,
-        "2028-06": 59.0,
-        "2028-07": 59.0,
-        "2028-08": 59.0,
-        "2028-09": 59.0,
-        "2028-10": 59.0,
-        "2028-11": 59.0,
-        "2028-12": 59.0,
-        "2029-01": 59.0
+        "2026-10": 59,
+        "2026-11": 59,
+        "2026-12": 59,
+        "2027-01": 59,
+        "2027-02": 59,
+        "2027-03": 59,
+        "2027-04": 59,
+        "2027-05": 59,
+        "2027-06": 59,
+        "2027-07": 59,
+        "2027-08": 59,
+        "2027-09": 59,
+        "2027-10": 59,
+        "2027-11": 59,
+        "2027-12": 59,
+        "2028-01": 59,
+        "2028-02": 59,
+        "2028-03": 59,
+        "2028-04": 59,
+        "2028-05": 59,
+        "2028-06": 59,
+        "2028-07": 59,
+        "2028-08": 59,
+        "2028-09": 59,
+        "2028-10": 59,
+        "2028-11": 59,
+        "2028-12": 59,
+        "2029-01": 59
       },
       "source": "MATE-OESC · fila 26",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "3743e033da4140a2",
@@ -280,23 +284,24 @@
         "2027-06": 41,
         "2027-07": 38
       },
-      "summerPrice": 59.0,
-      "winterPrice": 59.0,
+      "summerPrice": 59,
+      "winterPrice": 59,
       "monthlyPrices": {
-        "2026-10": 59.0,
-        "2026-11": 59.0,
-        "2026-12": 59.0,
-        "2027-01": 59.0,
-        "2027-02": 59.0,
-        "2027-03": 59.0,
-        "2027-04": 59.0,
-        "2027-05": 59.0,
-        "2027-06": 59.0,
-        "2027-07": 59.0
+        "2026-10": 59,
+        "2026-11": 59,
+        "2026-12": 59,
+        "2027-01": 59,
+        "2027-02": 59,
+        "2027-03": 59,
+        "2027-04": 59,
+        "2027-05": 59,
+        "2027-06": 59,
+        "2027-07": 59
       },
       "source": "MATE-OESC · fila 28",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "dd824f13cdabf6cf",
@@ -330,7 +335,8 @@
       },
       "source": "MATE-OESC · fila 29",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "1305cdf3389fb465",
@@ -372,7 +378,8 @@
       },
       "source": "MATE-OESC · fila 30",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "96dab63f6447ac3f",
@@ -400,7 +407,8 @@
       },
       "source": "MATE-OESC · fila 34",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "074b2765d6c16100",
@@ -430,29 +438,30 @@
         "2027-12": 300,
         "2028-01": 330
       },
-      "summerPrice": 59.0,
-      "winterPrice": 59.0,
+      "summerPrice": 59,
+      "winterPrice": 59,
       "monthlyPrices": {
-        "2026-10": 59.0,
-        "2026-11": 59.0,
-        "2026-12": 59.0,
-        "2027-01": 59.0,
-        "2027-02": 59.0,
-        "2027-03": 59.0,
-        "2027-04": 59.0,
-        "2027-05": 59.0,
-        "2027-06": 59.0,
-        "2027-07": 59.0,
-        "2027-08": 59.0,
-        "2027-09": 59.0,
-        "2027-10": 59.0,
-        "2027-11": 59.0,
-        "2027-12": 59.0,
-        "2028-01": 59.0
+        "2026-10": 59,
+        "2026-11": 59,
+        "2026-12": 59,
+        "2027-01": 59,
+        "2027-02": 59,
+        "2027-03": 59,
+        "2027-04": 59,
+        "2027-05": 59,
+        "2027-06": 59,
+        "2027-07": 59,
+        "2027-08": 59,
+        "2027-09": 59,
+        "2027-10": 59,
+        "2027-11": 59,
+        "2027-12": 59,
+        "2028-01": 59
       },
       "source": "MATE-OESC · fila 35",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "b44194453bcaf49f",
@@ -494,41 +503,42 @@
         "2028-12": 130,
         "2029-01": 130
       },
-      "summerPrice": 58.0,
-      "winterPrice": 58.0,
+      "summerPrice": 58,
+      "winterPrice": 58,
       "monthlyPrices": {
-        "2026-10": 58.0,
-        "2026-11": 58.0,
-        "2026-12": 58.0,
-        "2027-01": 58.0,
-        "2027-02": 58.0,
-        "2027-03": 58.0,
-        "2027-04": 58.0,
-        "2027-05": 58.0,
-        "2027-06": 58.0,
-        "2027-07": 58.0,
-        "2027-08": 58.0,
-        "2027-09": 58.0,
-        "2027-10": 58.0,
-        "2027-11": 58.0,
-        "2027-12": 58.0,
-        "2028-01": 58.0,
-        "2028-02": 58.0,
-        "2028-03": 58.0,
-        "2028-04": 58.0,
-        "2028-05": 58.0,
-        "2028-06": 58.0,
-        "2028-07": 58.0,
-        "2028-08": 58.0,
-        "2028-09": 58.0,
-        "2028-10": 58.0,
-        "2028-11": 58.0,
-        "2028-12": 58.0,
-        "2029-01": 58.0
+        "2026-10": 58,
+        "2026-11": 58,
+        "2026-12": 58,
+        "2027-01": 58,
+        "2027-02": 58,
+        "2027-03": 58,
+        "2027-04": 58,
+        "2027-05": 58,
+        "2027-06": 58,
+        "2027-07": 58,
+        "2027-08": 58,
+        "2027-09": 58,
+        "2027-10": 58,
+        "2027-11": 58,
+        "2027-12": 58,
+        "2028-01": 58,
+        "2028-02": 58,
+        "2028-03": 58,
+        "2028-04": 58,
+        "2028-05": 58,
+        "2028-06": 58,
+        "2028-07": 58,
+        "2028-08": 58,
+        "2028-09": 58,
+        "2028-10": 58,
+        "2028-11": 58,
+        "2028-12": 58,
+        "2029-01": 58
       },
       "source": "MATE-OESC · fila 36",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "a5bbd0a4d177ce7b",
@@ -570,41 +580,42 @@
         "2028-12": 30,
         "2029-01": 30
       },
-      "summerPrice": 58.0,
-      "winterPrice": 58.0,
+      "summerPrice": 58,
+      "winterPrice": 58,
       "monthlyPrices": {
-        "2026-10": 58.0,
-        "2026-11": 58.0,
-        "2026-12": 58.0,
-        "2027-01": 58.0,
-        "2027-02": 58.0,
-        "2027-03": 58.0,
-        "2027-04": 58.0,
-        "2027-05": 58.0,
-        "2027-06": 58.0,
-        "2027-07": 58.0,
-        "2027-08": 58.0,
-        "2027-09": 58.0,
-        "2027-10": 58.0,
-        "2027-11": 58.0,
-        "2027-12": 58.0,
-        "2028-01": 58.0,
-        "2028-02": 58.0,
-        "2028-03": 58.0,
-        "2028-04": 58.0,
-        "2028-05": 58.0,
-        "2028-06": 58.0,
-        "2028-07": 58.0,
-        "2028-08": 58.0,
-        "2028-09": 58.0,
-        "2028-10": 58.0,
-        "2028-11": 58.0,
-        "2028-12": 58.0,
-        "2029-01": 58.0
+        "2026-10": 58,
+        "2026-11": 58,
+        "2026-12": 58,
+        "2027-01": 58,
+        "2027-02": 58,
+        "2027-03": 58,
+        "2027-04": 58,
+        "2027-05": 58,
+        "2027-06": 58,
+        "2027-07": 58,
+        "2027-08": 58,
+        "2027-09": 58,
+        "2027-10": 58,
+        "2027-11": 58,
+        "2027-12": 58,
+        "2028-01": 58,
+        "2028-02": 58,
+        "2028-03": 58,
+        "2028-04": 58,
+        "2028-05": 58,
+        "2028-06": 58,
+        "2028-07": 58,
+        "2028-08": 58,
+        "2028-09": 58,
+        "2028-10": 58,
+        "2028-11": 58,
+        "2028-12": 58,
+        "2029-01": 58
       },
       "source": "MATE-OESC · fila 37",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "0da2cbf92e61b83e",
@@ -646,7 +657,8 @@
       },
       "source": "MATE-OESC · fila 39",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "8a89308160948119",
@@ -672,7 +684,8 @@
       },
       "source": "MATE-OESC · fila 69",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "6f385a3e103f0d71",
@@ -712,7 +725,8 @@
       },
       "source": "MATE-OESC · fila 70",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "be1d07a5ba8be0a9",
@@ -756,7 +770,8 @@
       },
       "source": "MATE-OESC · fila 71",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "19e01cfe14719777",
@@ -800,7 +815,8 @@
       },
       "source": "MATE-OECC · fila 14",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "fe4735537482377b",
@@ -828,27 +844,28 @@
         "2027-10": 1000,
         "2027-11": 1000
       },
-      "summerPrice": 44.0,
-      "winterPrice": 73.0,
+      "summerPrice": 44,
+      "winterPrice": 73,
       "monthlyPrices": {
-        "2026-10": 44.0,
-        "2026-11": 44.0,
-        "2026-12": 44.0,
-        "2027-01": 44.0,
-        "2027-02": 44.0,
-        "2027-03": 44.0,
-        "2027-04": 44.0,
-        "2027-05": 73.0,
-        "2027-06": 73.0,
-        "2027-07": 73.0,
-        "2027-08": 73.0,
-        "2027-09": 73.0,
-        "2027-10": 44.0,
-        "2027-11": 44.0
+        "2026-10": 44,
+        "2026-11": 44,
+        "2026-12": 44,
+        "2027-01": 44,
+        "2027-02": 44,
+        "2027-03": 44,
+        "2027-04": 44,
+        "2027-05": 73,
+        "2027-06": 73,
+        "2027-07": 73,
+        "2027-08": 73,
+        "2027-09": 73,
+        "2027-10": 44,
+        "2027-11": 44
       },
       "source": "MATE-OECC · fila 15",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "d55ba07bcc0e1aef",
@@ -874,25 +891,26 @@
         "2027-08": 500,
         "2027-09": 500
       },
-      "summerPrice": 45.0,
-      "winterPrice": 74.0,
+      "summerPrice": 45,
+      "winterPrice": 74,
       "monthlyPrices": {
-        "2026-10": 45.0,
-        "2026-11": 45.0,
-        "2026-12": 45.0,
-        "2027-01": 45.0,
-        "2027-02": 45.0,
-        "2027-03": 45.0,
-        "2027-04": 45.0,
-        "2027-05": 74.0,
-        "2027-06": 74.0,
-        "2027-07": 74.0,
-        "2027-08": 74.0,
-        "2027-09": 74.0
+        "2026-10": 45,
+        "2026-11": 45,
+        "2026-12": 45,
+        "2027-01": 45,
+        "2027-02": 45,
+        "2027-03": 45,
+        "2027-04": 45,
+        "2027-05": 74,
+        "2027-06": 74,
+        "2027-07": 74,
+        "2027-08": 74,
+        "2027-09": 74
       },
       "source": "MATE-OECC · fila 16",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "47d81bd122a40fc2",
@@ -936,7 +954,8 @@
       },
       "source": "MATE-OECC · fila 17",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "4da189c01b83919c",
@@ -980,7 +999,8 @@
       },
       "source": "MATE-OECC · fila 18",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "85e2a6d266f8a97f",
@@ -1008,27 +1028,28 @@
         "2027-10": 1000,
         "2027-11": 1000
       },
-      "summerPrice": 44.0,
-      "winterPrice": 73.0,
+      "summerPrice": 44,
+      "winterPrice": 73,
       "monthlyPrices": {
-        "2026-10": 44.0,
-        "2026-11": 44.0,
-        "2026-12": 44.0,
-        "2027-01": 44.0,
-        "2027-02": 44.0,
-        "2027-03": 44.0,
-        "2027-04": 44.0,
-        "2027-05": 73.0,
-        "2027-06": 73.0,
-        "2027-07": 73.0,
-        "2027-08": 73.0,
-        "2027-09": 73.0,
-        "2027-10": 44.0,
-        "2027-11": 44.0
+        "2026-10": 44,
+        "2026-11": 44,
+        "2026-12": 44,
+        "2027-01": 44,
+        "2027-02": 44,
+        "2027-03": 44,
+        "2027-04": 44,
+        "2027-05": 73,
+        "2027-06": 73,
+        "2027-07": 73,
+        "2027-08": 73,
+        "2027-09": 73,
+        "2027-10": 44,
+        "2027-11": 44
       },
       "source": "MATE-OECC · fila 20",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "4989d7bbe0bb1673",
@@ -1054,25 +1075,26 @@
         "2027-08": 500,
         "2027-09": 500
       },
-      "summerPrice": 45.0,
-      "winterPrice": 74.0,
+      "summerPrice": 45,
+      "winterPrice": 74,
       "monthlyPrices": {
-        "2026-10": 45.0,
-        "2026-11": 45.0,
-        "2026-12": 45.0,
-        "2027-01": 45.0,
-        "2027-02": 45.0,
-        "2027-03": 45.0,
-        "2027-04": 45.0,
-        "2027-05": 74.0,
-        "2027-06": 74.0,
-        "2027-07": 74.0,
-        "2027-08": 74.0,
-        "2027-09": 74.0
+        "2026-10": 45,
+        "2026-11": 45,
+        "2026-12": 45,
+        "2027-01": 45,
+        "2027-02": 45,
+        "2027-03": 45,
+        "2027-04": 45,
+        "2027-05": 74,
+        "2027-06": 74,
+        "2027-07": 74,
+        "2027-08": 74,
+        "2027-09": 74
       },
       "source": "MATE-OECC · fila 21",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 2
     },
     {
       "id": "5e012c0614cc1347",
@@ -1100,7 +1122,8 @@
       },
       "source": "MATP · fila 51 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "f2849e1ef8b1745b",
@@ -1128,7 +1151,8 @@
       },
       "source": "MATP · fila 52 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "4cd2f8ae9858d473",
@@ -1156,7 +1180,8 @@
       },
       "source": "MATP · fila 53 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "a863988f2a2383b5",
@@ -1188,7 +1213,8 @@
       },
       "source": "MATP · fila 54 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "d42a1eaf5f1fc7e0",
@@ -1220,7 +1246,8 @@
       },
       "source": "MATP · fila 55 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "aa685ba4fe6e5ca7",
@@ -1252,7 +1279,8 @@
       },
       "source": "MATP · fila 56 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "8d412f6d70a3259c",
@@ -1284,7 +1312,8 @@
       },
       "source": "MATP · fila 57 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "ab0fe4ff23e93e24",
@@ -1318,7 +1347,8 @@
       },
       "source": "MATP · fila 58 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "5426f8218e78e1e9",
@@ -1352,7 +1382,8 @@
       },
       "source": "MATP · fila 59 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "b05c2fef46b5f451",
@@ -1386,7 +1417,8 @@
       },
       "source": "MATP · fila 60 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "e107d4cb1c32a866",
@@ -1420,7 +1452,8 @@
       },
       "source": "MATP · fila 61 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "e59a8ded06347e1c",
@@ -1454,7 +1487,8 @@
       },
       "source": "MATP · fila 62 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "c7549737b12e3542",
@@ -1488,7 +1522,8 @@
       },
       "source": "MATP · fila 63 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "bd153a70b1f378b1",
@@ -1522,7 +1557,8 @@
       },
       "source": "MATP · fila 64 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "0305d5721c8d1dfb",
@@ -1556,7 +1592,8 @@
       },
       "source": "MATP · fila 65 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "8913533a992dea84",
@@ -1590,7 +1627,8 @@
       },
       "source": "MATP · fila 66 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "4893648aabfd3cf5",
@@ -1624,7 +1662,8 @@
       },
       "source": "MATP · fila 67 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "21570833ff5271ae",
@@ -1658,7 +1697,8 @@
       },
       "source": "MATP · fila 68 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "91d5d4b17eed7bd8",
@@ -1692,7 +1732,8 @@
       },
       "source": "MATP · fila 69 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "08ee5f561f9ff300",
@@ -1726,7 +1767,8 @@
       },
       "source": "MATP · fila 70 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "ab9132657ff0eed8",
@@ -1760,7 +1802,8 @@
       },
       "source": "MATP · fila 71 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "2fddd7ba7e6f8f06",
@@ -1794,7 +1837,8 @@
       },
       "source": "MATP · fila 72 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "f4d008653ecd2b95",
@@ -1828,7 +1872,8 @@
       },
       "source": "MATP · fila 73 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "99862b8b99599445",
@@ -1862,7 +1907,8 @@
       },
       "source": "MATP · fila 74 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "62e3a4c311daa78e",
@@ -1896,7 +1942,8 @@
       },
       "source": "MATP · fila 75 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "b2ab1671a2136532",
@@ -1930,7 +1977,8 @@
       },
       "source": "MATP · fila 76 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "068ef3e2277ae784",
@@ -1964,7 +2012,8 @@
       },
       "source": "MATP · fila 77 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "20a588f65858dcc7",
@@ -1998,7 +2047,8 @@
       },
       "source": "MATP · fila 78 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "4ab3e4dbbf81c674",
@@ -2034,7 +2084,8 @@
       },
       "source": "MATP · fila 79 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "dad7ab689f81aadc",
@@ -2070,7 +2121,8 @@
       },
       "source": "MATP · fila 80 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "80087b070c8e8f2d",
@@ -2106,7 +2158,8 @@
       },
       "source": "MATP · fila 81 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "07a81bf0ea962e01",
@@ -2142,7 +2195,8 @@
       },
       "source": "MATP · fila 82 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "86e2f98fd71b45b6",
@@ -2178,7 +2232,8 @@
       },
       "source": "MATP · fila 83 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "7234f5d3cda1c067",
@@ -2216,7 +2271,8 @@
       },
       "source": "MATP · fila 84 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "eb6e6345c9fbda99",
@@ -2256,7 +2312,8 @@
       },
       "source": "MATP · fila 85 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "d968a1f892cc14d4",
@@ -2300,7 +2357,8 @@
       },
       "source": "MATP · fila 86 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     },
     {
       "id": "89256e1880fd9ff9",
@@ -2344,8 +2402,17 @@
       },
       "source": "MATP · fila 87 · MW-hrp previstos",
       "active": true,
-      "imported": true
+      "imported": true,
+      "priority": 1
     }
   ],
-  "audit": []
+  "audit": [
+    {
+      "at": "2026-11-18",
+      "action": "migrate_sale_priorities",
+      "revision": 2,
+      "contracts": 59,
+      "source": "Columna G de las hojas originales"
+    }
+  ]
 }

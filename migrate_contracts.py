@@ -8,7 +8,7 @@ def add(society,supplier,kind,sheet,row,dates,price,source):
  name=str(row[4] or '').strip().replace('OESC (interco)','OESC');nemo=str(row[5] or '').replace('\n',' / ').strip()
  ident=hashlib.sha256((society+source).encode()).hexdigest()[:16]
  prices={m:price(int(m[-2:])) for m in vals}
- out.append(dict(id=ident,society=society,client=name,nemo=nemo,supplier=supplier,kind=kind,start=min(vals),end=max(vals),volume=next(iter(vals.values())),monthlyVolumes=vals,summerPrice=prices.get(next((m for m in vals if int(m[-2:]) not in range(5,10)),''),next(iter(prices.values()))),winterPrice=prices.get(next((m for m in vals if int(m[-2:]) in range(5,10)),''),next(iter(prices.values()))),monthlyPrices=prices,source=source,active=True,imported=True))
+ out.append(dict(id=ident,society=society,client=name,nemo=nemo,supplier=supplier,kind=kind,priority=int(row[6]) if isinstance(row[6],(int,float)) and row[6]>=1 else None,start=min(vals),end=max(vals),volume=next(iter(vals.values())),monthlyVolumes=vals,summerPrice=prices.get(next((m for m in vals if int(m[-2:]) not in range(5,10)),''),next(iter(prices.values()))),winterPrice=prices.get(next((m for m in vals if int(m[-2:]) in range(5,10)),''),next(iter(prices.values()))),monthlyPrices=prices,source=source,active=True,imported=True))
 o=json.load(open(R/'source_data/oesc_projection.json'))
 for rr in [11,*range(24,31),*range(34,40),69,70,71]:
  row=o[rr-1];name=str(row[4]);supplier='LEDLAR' if rr==11 else 'OECC · Alto Valle' if rr>=69 else 'GSSR'
@@ -41,6 +41,6 @@ for rr in range(51,88):
   raw=row[7]
   return (14 if m in [10,11,12,1] else 13.25) if isinstance(raw,str) else raw
  add('OESC' if rr<54 else 'OECC','OECC · Alto Valle','power',p,row,p[49],price,f'MATP · fila {rr} · MW-hrp previstos')
-state=dict(schemaVersion=1,revision=1,contracts=out,audit=[])
+state=dict(schemaVersion=2,revision=1,contracts=out,audit=[])
 (R/'data/state.json').write_text(json.dumps(state,ensure_ascii=False,indent=2)+'\n')
 print(f'{len(out)} contratos migrados')

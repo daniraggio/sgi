@@ -2,7 +2,7 @@ import http from 'node:http';
 import {readFile,writeFile,rename,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {resolve,dirname} from 'node:path';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,timingSafeEqual} from 'node:crypto';
 import {validateContract} from './model.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),file=process.env.SGI_STATE_PATH||resolve(root,'data/state.json');
 const repo=process.env.GITHUB_REPOSITORY||'daniraggio/sgi',branch=process.env.GITHUB_BRANCH||'main',remote=Boolean(process.env.GITHUB_TOKEN);
@@ -12,6 +12,10 @@ async function load(){if(remote){const r=await github('GET');return {state:JSON.
 async function persist(state,sha){const content=JSON.stringify(state,null,2)+'\n';if(remote){await github('PUT',{message:'SGI: actualizar contrato comercial',content:Buffer.from(content).toString('base64'),sha,branch});return}await mkdir(dirname(file),{recursive:true});await writeFile(file+'.tmp',content);await rename(file+'.tmp',file)}
 function reply(res,status,body){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(body))}
 export const server=http.createServer(async(req,res)=>{try{
+ const secret=process.env.SGI_PASSWORD;
+ if(!secret){reply(res,503,{error:'Configurá SGI_PASSWORD en el servidor para habilitar el acceso protegido.'});return}
+ const expected=Buffer.from('Basic '+Buffer.from('sgi:'+secret).toString('base64')),supplied=Buffer.from(req.headers.authorization||'');
+ if(expected.length!==supplied.length||!timingSafeEqual(expected,supplied)){res.writeHead(401,{'WWW-Authenticate':'Basic realm="SGI", charset="UTF-8"','Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify({error:'Se requiere autenticación para consultar o modificar contratos.'}));return}
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/api/state'&&req.method==='GET'){const {state}=await load();reply(res,200,{...state,storage:remote?'github':'repository',repository:repo});return}
  if(url.pathname.startsWith('/api/contracts')&&['POST','PUT','DELETE'].includes(req.method)){
@@ -21,7 +25,7 @@ export const server=http.createServer(async(req,res)=>{try{
   const input=JSON.parse(body);const action=async()=>{const {state,sha}=await load();if(input.revision!==state.revision){reply(res,409,{error:'Hay cambios más recientes. Recargá el listado antes de guardar.'});return}
    const id=url.pathname.split('/')[3];const index=state.contracts.findIndex(c=>c.id===id);let saved;
    if(req.method==='POST'){saved={...validateContract(input.contract),id:randomUUID(),source:'Alta manual',imported:false};state.contracts.push(saved)}
-   else{if(index<0){reply(res,404,{error:'Contrato no encontrado'});return}if(req.method==='DELETE'){state.contracts[index].active=false;saved=state.contracts[index]}else{saved={...validateContract(input.contract),id,...{source:state.contracts[index].source,imported:state.contracts[index].imported}};state.contracts[index]=saved}}
+   else{if(index<0){reply(res,404,{error:'Contrato no encontrado'});return}if(req.method==='DELETE'){state.contracts[index].active=false;saved=state.contracts[index]}else{saved={...validateContract(input.contract),id,priority:input.contract.priority===undefined?(state.contracts[index].priority??null):validateContract(input.contract).priority,...{source:state.contracts[index].source,imported:state.contracts[index].imported}};state.contracts[index]=saved}}
    state.revision++;state.audit.push({at:new Date().toISOString(),action:req.method,contractId:saved.id,revision:state.revision});await persist(state,sha);reply(res,200,{contract:saved,revision:state.revision,storage:remote?'github':'repository'});
   };const next=queue.then(action);queue=next.catch(()=>{});await next;return;
  }

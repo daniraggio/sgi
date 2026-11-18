@@ -7,10 +7,10 @@ Tablero de OESC y OECC con histórico, proyecciones, cartera compacta y gestión
 Requiere Node.js 22 o posterior. No hay dependencias npm que instalar.
 
 ```bash
-npm start
+SGI_PASSWORD="tu_clave_privada" npm start
 ```
 
-Abrir http://127.0.0.1:4173. Para reconstruir el HTML desde las fuentes:
+Abrir http://127.0.0.1:4173 y autenticarse con usuario `sgi` y la clave definida en `SGI_PASSWORD`. El servidor Node rechaza todo acceso sin autenticación, y no inicia el acceso a datos si falta esa configuración. Para reconstruir el HTML desde las fuentes:
 
 ```bash
 python3 build.py
@@ -28,11 +28,13 @@ En modo local, las altas y modificaciones se escriben de forma atómica en `data
 
 Para guardado directo en GitHub desde un servidor, configurar `GITHUB_TOKEN` como secreto del servidor, con permiso Contents de lectura/escritura limitado a este repositorio. Configurar también `GITHUB_REPOSITORY=daniraggio/sgi` y opcionalmente `GITHUB_BRANCH=main`. Cada guardado crea un commit; la revisión y el SHA evitan sobrescribir cambios simultáneos. La conexión de GitHub en ChatGPT permite mantener este repositorio, pero no entrega una credencial al servidor de la aplicación.
 
-Los secretos nunca se incluyen en HTML ni en el repositorio. La API no expone rutas arbitrarias de archivos. El servidor escucha en 127.0.0.1 por defecto. Para publicarlo, colocarlo detrás de HTTPS y un control de acceso de usuarios; no exponer directamente una instancia sin autenticación. `HOST` y `PORT` se pueden configurar desde el servidor.
+Los secretos nunca se incluyen en HTML ni en el repositorio. La API no expone rutas arbitrarias de archivos. El servidor escucha en 127.0.0.1 por defecto y exige autenticación HTTP con `SGI_PASSWORD` en todas las rutas. Para publicarlo, colocarlo detrás de HTTPS y un control de acceso de usuarios; no exponer directamente una instancia sin autenticación. `HOST` y `PORT` se pueden configurar desde el servidor.
 
 ## Uso
 
-En **Clientes y contratos** se puede dar de alta un cliente y definir sociedad, producto, NEMO, proveedor, inicio/fin, volumen mensual y venta fija o por temporada. Se permiten excepciones mensuales y archivo reversible. Los meses inicial y final se incluyen, sin renovación automática.
+En **Clientes y contratos** se presentan dos grillas separadas: Energía (MWh) y Potencia (MW-hrp). Cada contrato ocupa una fila con NEMO, prioridad de venta, precio y volumen por mes. Las filas se agrupan por sociedad, generador y prioridad, con subtotales por prioridad y generador. Los meses, el NEMO, la prioridad y el precio quedan visibles al desplazarse. Se puede filtrar por período y prioridad, y exportar la grilla a CSV.
+
+El alta permite definir sociedad, producto, NEMO, proveedor, prioridad de venta, inicio/fin, volumen mensual y venta fija o por temporada. Se permiten excepciones mensuales y archivo reversible. Los meses inicial y final se incluyen, sin renovación automática.
 
 En **Cartera · energía mensual**:
 
@@ -40,7 +42,7 @@ En **Cartera · energía mensual**:
 - **Volumen contratado** usa la base editable y refleja inmediatamente las altas y modificaciones. La venta nominal es volumen por precio, sin interpretarla como facturación o margen.
 - Las filas son compactas; la primera columna y los encabezados quedan fijos. El NEMO se puede mostrar, y el botón **12 meses** reduce el período visible.
 
-Un contrato nuevo no implica entrega garantizada. No se inventa generación ni se agregan ventas reales al ingresarlo. La asignación física de entregas y el recálculo de despacho deben resolverse aparte. Las cantidades de potencia están en MW-hrp, separadas de MWh y MW. Las filas de potencia importadas usan los MW-hrp previstos en MATP, no los MW nominales contratados.
+Un contrato nuevo no implica entrega garantizada. No se inventa generación ni se agregan ventas reales al ingresarlo. La asignación física de entregas y el recálculo de despacho deben resolverse aparte. Las cantidades de potencia están en MW-hrp, separadas de MWh y MW. Las filas de potencia importadas usan los MW-hrp previstos en MATP, no los MW nominales contratados. Las prioridades se recuperan de la columna G de la hoja de origen; una prioridad no definida se muestra como tal, sin asignarla por defecto. Cambiar una prioridad en la ficha no reescribe las facturas ni recalcula la asignación física del histórico.
 
 El histórico está cerrado a septiembre de 2026. Las reglas confirmadas de precios, generación y márgenes se conservan en los archivos del modelo. Los contratos editables no reescriben facturas históricas.
 
