@@ -1,4 +1,4 @@
-import {billingCatalog,billingRows,billingXlsx} from './billing.mjs';
+import {billingCatalog,billingRows,billingXlsx,billingComparison} from './billing.mjs';
 import http from 'node:http';
 import {readFile,writeFile,rename,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
@@ -23,7 +23,7 @@ export const server=http.createServer(async(req,res)=>{try{
   const data=JSON.parse(await readFile(resolve(root,'data/dte-billing.json'),'utf8'));
   if(url.pathname.endsWith('/catalog')){reply(res,200,{periods:billingCatalog(data)});return}
   const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await load(),rows=billingRows(state,data,month,edition);
-  res.writeHead(200,{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'no-store'});res.end(billingXlsx(rows,month));return;
+  res.writeHead(200,{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'no-store'});res.end(billingXlsx(rows,month,edition==='II'?billingComparison(state,data,month):null));return;
  }
  if(url.pathname==='/api/state'&&req.method==='GET'){const {state}=await load();reply(res,200,{...state,storage:remote?'github':'repository',repository:repo});return}
  if((/^\/api\/contracts(?:\/[^/]+)?$/.test(url.pathname)&&['POST','PUT','DELETE'].includes(req.method))||(url.pathname==='/api/generation'&&req.method==='PUT')){
