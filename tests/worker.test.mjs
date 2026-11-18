@@ -14,3 +14,11 @@ test('alta y edición conservan Contrato PS y metadatos de facturación',async()
  const legacy={...contract,volume:12};delete legacy.psContract;
  response=await handler.fetch(request('/api/contracts/'+created.contract.id,'PUT',legacy),{},{props:{CONNECTORS:binding}});assert.equal(response.status,200);assert.equal(state.contracts[0].psContract,'2340');assert.equal(state.contracts[0].volume,12);assert.equal(state.billingProfiles[0].powerPrice,13.2);assert.equal(writes,2);
 });
+
+test('guardar la base real usa JSON compacto y conserva todos los datos',async()=>{
+ const {readFileSync}=await import('node:fs');const original=JSON.parse(readFileSync(new URL('../data/state.json',import.meta.url),'utf8'));let written,requestBytes;
+ const binding={invoke:async(connector,action,args)=>{if(action==='fetch_file')return {status:'success',result:{structuredContent:{sha:'fresh',content:JSON.stringify(original,null,2)}}};requestBytes=new TextEncoder().encode(JSON.stringify({connector_id:connector,action,arguments:args})).length;assert.ok(requestBytes<65536,'La solicitud de escritura debe caber sin espacios de presentación');assert.equal(args.content,JSON.stringify(JSON.parse(args.content))+'\n');written=JSON.parse(args.content);return {status:'success',result:{structuredContent:{}}}}};
+ const contract={society:'OESC',kind:'power',priority:1,client:'Contrato de prueba',nemo:'TEST',supplier:'OECC · Alto Valle',psContract:'2340',start:'2026-11',end:'2027-11',volume:10,summerPrice:13.2,winterPrice:13.2};
+ const r=await handler.fetch(new Request('https://sgi.example/api/contracts',{method:'POST',headers:{'oai-authenticated-user-id':'test',Origin:'https://sgi.example','Content-Type':'application/json'},body:JSON.stringify({revision:original.revision,contract})}),{},{props:{CONNECTORS:binding}});
+ assert.equal(r.status,200);assert.equal(written.contracts.length,original.contracts.length+1);assert.deepEqual(written.contracts.slice(0,-1),original.contracts);assert.deepEqual(written.generation,original.generation);assert.deepEqual(written.billingProfiles,original.billingProfiles);assert.equal(written.revision,original.revision+1);
+});
