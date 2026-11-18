@@ -3,7 +3,7 @@ import {readFile,writeFile,rename,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {resolve,dirname} from 'node:path';
 import {randomUUID,timingSafeEqual} from 'node:crypto';
-import {validateContract} from './model.mjs';
+import {validateContract,validateGeneration} from './model.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),file=process.env.SGI_STATE_PATH||resolve(root,'data/state.json');
 const repo=process.env.GITHUB_REPOSITORY||'daniraggio/sgi',branch=process.env.GITHUB_BRANCH||'main',remote=Boolean(process.env.GITHUB_TOKEN);
 let queue=Promise.resolve();
@@ -18,14 +18,15 @@ export const server=http.createServer(async(req,res)=>{try{
  if(expected.length!==supplied.length||!timingSafeEqual(expected,supplied)){res.writeHead(401,{'WWW-Authenticate':'Basic realm="SGI", charset="UTF-8"','Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify({error:'Se requiere autenticación para consultar o modificar contratos.'}));return}
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/api/state'&&req.method==='GET'){const {state}=await load();reply(res,200,{...state,storage:remote?'github':'repository',repository:repo});return}
- if(url.pathname.startsWith('/api/contracts')&&['POST','PUT','DELETE'].includes(req.method)){
+ if((/^\/api\/contracts(?:\/[^/]+)?$/.test(url.pathname)&&['POST','PUT','DELETE'].includes(req.method))||(url.pathname==='/api/generation'&&req.method==='PUT')){
   if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host){reply(res,403,{error:'Origen no autorizado'});return}
   if(req.headers['content-type']!=='application/json'){reply(res,415,{error:'Se requiere JSON'});return}
   let body='';for await(const chunk of req){body+=chunk;if(body.length>1000000){reply(res,413,{error:'Solicitud demasiado grande'});return}}
   const input=JSON.parse(body);const action=async()=>{const {state,sha}=await load();if(input.revision!==state.revision){reply(res,409,{error:'Hay cambios más recientes. Recargá el listado antes de guardar.'});return}
+   if(url.pathname==='/api/generation'){const edit=validateGeneration(input,state.generation||[]),plan=state.generation.find(p=>p.id===edit.planId);plan.monthlyGeneration[edit.month]=edit.generation;state.revision++;state.audit.push({at:new Date().toISOString(),action:'GENERATION',...edit,revision:state.revision});await persist(state,sha);reply(res,200,{revision:state.revision});return}
    const id=url.pathname.split('/')[3];const index=state.contracts.findIndex(c=>c.id===id);let saved;
    if(req.method==='POST'){saved={...validateContract(input.contract),id:randomUUID(),source:'Alta manual',imported:false};state.contracts.push(saved)}
-   else{if(index<0){reply(res,404,{error:'Contrato no encontrado'});return}if(req.method==='DELETE'){state.contracts[index].active=false;saved=state.contracts[index]}else{saved={...validateContract(input.contract),id,priority:input.contract.priority===undefined?(state.contracts[index].priority??null):validateContract(input.contract).priority,...{source:state.contracts[index].source,imported:state.contracts[index].imported}};state.contracts[index]=saved}}
+   else{if(index<0){reply(res,404,{error:'Contrato no encontrado'});return}if(req.method==='DELETE'){state.contracts[index].active=false;saved=state.contracts[index]}else{saved={...validateContract(input.contract),id,priority:input.contract.priority===undefined?(state.contracts[index].priority??null):validateContract(input.contract).priority,...{source:state.contracts[index].source,imported:state.contracts[index].imported,linkedDemand:state.contracts[index].linkedDemand===true}};state.contracts[index]=saved}}
    state.revision++;state.audit.push({at:new Date().toISOString(),action:req.method,contractId:saved.id,revision:state.revision});await persist(state,sha);reply(res,200,{contract:saved,revision:state.revision,storage:remote?'github':'repository'});
   };const next=queue.then(action);queue=next.catch(()=>{});await next;return;
  }

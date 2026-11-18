@@ -21,7 +21,7 @@ npm test
 
 - `source_data/`: datos de origen extraídos de las planillas. Se conservan como fuente.
 - `data.json`: histórico y proyecciones del tablero anterior, con sus ajustes confirmados.
-- `data/state.json`: contratos editables, revisión y registro de altas, modificaciones y archivo.
+- `data/state.json`: contratos editables, generación mensual, revisión y registro de modificaciones.
 - `migrate_contracts.py`: migración inicial reproducible de 59 filas de contratos. No ejecutarla sobre una base editada: reemplaza `data/state.json`.
 
 En modo local, las altas y modificaciones se escriben de forma atómica en `data/state.json`, dentro de esta copia del repositorio. No se guardan solamente en el navegador. Para subir cambios locales a GitHub se usa Git.
@@ -38,11 +38,11 @@ El alta permite definir sociedad, producto, NEMO, proveedor, prioridad de venta,
 
 En **Cartera · energía mensual**:
 
-- **Entregas reales y previstas** conserva el histórico y las proyecciones de las planillas.
+- **Entregas reales y previstas** conserva el histórico y usa la misma asignación simulada que la grilla de contratos para octubre de 2026 en adelante.
 - **Volumen contratado** usa la base editable y refleja inmediatamente las altas y modificaciones. La venta nominal es volumen por precio, sin interpretarla como facturación o margen.
 - Las filas son compactas; la primera columna y los encabezados quedan fijos. El NEMO se puede mostrar, y el botón **12 meses** reduce el período visible.
 
-Un contrato nuevo no implica entrega garantizada. No se inventa generación ni se agregan ventas reales al ingresarlo. La asignación física de entregas y el recálculo de despacho deben resolverse aparte. Las cantidades de potencia están en MW-hrp, separadas de MWh y MW. Las filas de potencia importadas usan los MW-hrp previstos en MATP, no los MW nominales contratados. Las prioridades se recuperan de la columna G de la hoja de origen; una prioridad no definida se muestra como tal, sin asignarla por defecto. Cambiar una prioridad en la ficha no reescribe las facturas ni recalcula la asignación física del histórico.
+Un contrato nuevo no implica entrega garantizada. No se inventa generación ni se agregan ventas reales al ingresarlo. La asignación comercial prevista se calcula por generador con la generación estimada, y no representa un despacho físico confirmado. Las cantidades de potencia están en MW-hrp, separadas de MWh y MW. Las filas de potencia importadas usan los MW-hrp previstos en MATP, no los MW nominales contratados. Las prioridades se recuperan de la columna G de la hoja de origen; una prioridad no definida se muestra como tal, sin asignarla por defecto. Cambiar una prioridad en la ficha no reescribe las facturas ni recalcula la asignación física del histórico.
 
 El histórico está cerrado a septiembre de 2026. Las reglas confirmadas de precios, generación y márgenes se conservan en los archivos del modelo. Los contratos editables no reescriben facturas históricas.
 
@@ -57,3 +57,19 @@ El repositorio contiene información comercial. Su visibilidad en GitHub determi
 `build_worker.py` prepara el Worker que sirve el tablero y guarda contratos directamente en GitHub con la conexión del visitante. Requiere la declaración del plugin GitHub en el alojamiento y una sesión de ChatGPT con permiso de escritura sobre el repositorio. No usa ni copia tokens del visitante. La versión online conserva el acceso privado del tablero anterior. El repositorio y su visibilidad son independientes del acceso al tablero.
 
 El guardado requiere el clic explícito en Guardar/Archivar. Las peticiones sin sesión, de otro origen o con una revisión obsoleta se rechazan. Los errores de autorización no se reintentan automáticamente.
+
+## Generación y asignación de energía
+
+La pestaña Energía de Clientes y contratos permite alternar **Asignación prevista** y **Topes contratados**. Muestra la generación por mes, la disponibilidad comercializable de OECC y el excedente sin asignar. **Editar generación** guarda el nuevo valor en GitHub y recalcula la grilla, la cartera, los ingresos y márgenes proyectados. Potencia e históricos permanecen separados.
+
+Para cada generador y mes se calcula sobre todos los contratos activos, antes de aplicar filtros:
+
+1. La primera prioridad recibe `tope individual × min(1, disponible / suma de topes de prioridad 1)`.
+2. El remanente pasa a la siguiente prioridad con la misma regla. Ningún contrato supera su tope.
+3. Los contratos sin prioridad no reciben asignación; la falta de generación se distingue de generación cero.
+
+La regla reproduce MATE-OESC filas 45–57 y MATE-OECC filas 30–38 del archivo original. En OECC se conserva el porcentaje comercializable mensual de la fila 9 respecto de la fila 8; editar generación escala esa disponibilidad. El contrato OECC → OESC tiene `linkedDemand`: su tope se obtiene de los contratos OESC abastecidos por Alto Valle, como la referencia original a MATE-OESC fila 82. La entrega de OECC limita el abastecimiento de OESC para repartirlo entre sus clientes. No se suman ambas sociedades como una venta consolidada.
+
+Santa Rosa conserva octubre de 2026 en **1.080 MWh**, y Chepes **120 MWh/mes hasta enero de 2027**. El excedente de Santa Rosa se valoriza a 40,80 USD/MWh; los demás excedentes se muestran sin inventar una venta. Los importes conservan las reglas comerciales confirmadas y la precisión completa; la pantalla redondea los MWh.
+
+`PUT /api/generation` usa la misma autenticación, validación de origen, revisión y SHA que los contratos. La auditoría registra generador, mes y valor. Una revisión obsoleta no sobrescribe cambios.

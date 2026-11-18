@@ -9,7 +9,7 @@ let matrixExport=[];
 const GENERATOR_NAMES={GSSR:'Santa Rosa · GSSR',LEDLAR:'Chepes · LEDLAR','OECC · Alto Valle':'OECC · Alto Valle','Sin asignar':'Sin generador identificado'};
 function renderPortfolio(){const periods=matrixPeriods.filter(d=>d>=$('portfolio-from').value&&d<=$('portfolio-to').value),query=$('portfolio-search').value.toLowerCase();const records=matrixRecords.filter(o=>periods.includes(o.date)&&(!$('portfolio-supplier').value||o.supplier===$('portfolio-supplier').value)&&(!query||(o.display+' '+o.displayNemo).toLowerCase().includes(query)));
 const groups={};records.forEach(o=>{const key=o.supplier+'|'+o.display;const g=groups[key]??={supplier:o.supplier,name:o.display,nemo:o.displayNemo,values:{},real:0,projected:0};g.values[o.date]=(g.values[o.date]||0)+o.q;g[o.actual?'real':'projected']+=o.q});
-const clientRows=Object.values(groups),suppliers=['GSSR','LEDLAR','OECC · Alto Valle','Sin asignar'].filter(s=>clientRows.some(r=>r.supplier===s));
+const clientRows=Object.values(groups),suppliers=[...new Set(clientRows.map(r=>r.supplier))].sort();
 function subtotal(rows,name,supplier='',kind='subtotal'){const g={name,nemo:'MWh',supplier,kind,values:{},real:0,projected:0};rows.forEach(r=>{g.real+=r.real;g.projected+=r.projected;periods.forEach(d=>g.values[d]=(g.values[d]||0)+(r.values[d]||0))});return g;}
 const total=subtotal(clientRows,'TOTAL CARTERA','','totalrow'),displayRows=[];
 suppliers.forEach(s=>{const rows=clientRows.filter(r=>r.supplier===s).sort((a,b)=>(b.real+b.projected)-(a.real+a.projected));displayRows.push({kind:'generator',supplier:s,name:GENERATOR_NAMES[s]||s});displayRows.push(...rows);displayRows.push(subtotal(rows,'Subtotal '+(GENERATOR_NAMES[s]||s),s));});displayRows.push(total);
