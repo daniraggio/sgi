@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "revision": 3,
+  "revision": 4,
   "contracts": [
     {
       "id": "3dbd06454f0bea52",
@@ -301,7 +301,8 @@
       "source": "MATE-OESC · fila 28",
       "active": true,
       "imported": true,
-      "priority": 1
+      "priority": 1,
+      "psContract": "2340"
     },
     {
       "id": "dd824f13cdabf6cf",
@@ -336,7 +337,8 @@
       "source": "MATE-OESC · fila 29",
       "active": true,
       "imported": true,
-      "priority": 1
+      "priority": 1,
+      "psContract": "2341"
     },
     {
       "id": "1305cdf3389fb465",
@@ -685,7 +687,8 @@
       "source": "MATE-OESC · fila 69",
       "active": true,
       "imported": true,
-      "priority": 1
+      "priority": 1,
+      "psContract": "2341"
     },
     {
       "id": "6f385a3e103f0d71",
@@ -726,7 +729,8 @@
       "source": "MATE-OESC · fila 70",
       "active": true,
       "imported": true,
-      "priority": 1
+      "priority": 1,
+      "psContract": "2340"
     },
     {
       "id": "be1d07a5ba8be0a9",
@@ -771,7 +775,8 @@
       "source": "MATE-OESC · fila 71",
       "active": true,
       "imported": true,
-      "priority": 1
+      "priority": 1,
+      "psContract": "2364"
     },
     {
       "id": "19e01cfe14719777",
@@ -2359,7 +2364,8 @@
       "source": "MATP · fila 86 · MW-hrp previstos",
       "active": true,
       "imported": true,
-      "priority": 1
+      "priority": 1,
+      "psContract": "2364"
     },
     {
       "id": "89256e1880fd9ff9",
@@ -2420,6 +2426,12 @@
       "revision": 3,
       "at": "2026-11-18T15:49:27.268551+00:00",
       "detail": "Generación mensual y prorrateo por prioridad, fuente única para contratos y cartera"
+    },
+    {
+      "at": "2026-11-18T19:58:20.571Z",
+      "action": "BILLING_METADATA",
+      "revision": 4,
+      "source": "Confirmación de Daniel: PS compartido entre energía y potencia; BEBLAN 2341, Ámbar 2340 / 13.20, Mi Refugio 2364 / 13.40."
     }
   ],
   "generation": [
@@ -2546,6 +2558,45 @@
         "2027-01": 1
       },
       "source": "Escenario confirmado · 120 MWh/mes hasta enero 2027"
+    }
+  ],
+  "billingProfiles": [
+    {
+      "society": "OESC",
+      "client": "AMBAR MINERA",
+      "nemos": [
+        "AMCORNQN",
+        "AMCORZQN"
+      ],
+      "psContract": "2340",
+      "powerPrice": 13.2
+    },
+    {
+      "society": "OESC",
+      "client": "AMG (BEBLAN S.A.)",
+      "nemos": [
+        "BEBLANCN"
+      ],
+      "psContract": "2341",
+      "powerPrice": null
+    },
+    {
+      "society": "OESC",
+      "client": "AMG (Mi Refugio)",
+      "nemos": [
+        "COMRCACN"
+      ],
+      "psContract": "2364",
+      "powerPrice": 13.4
+    },
+    {
+      "society": "OECC",
+      "client": "AMG (COMRCACN)",
+      "nemos": [
+        "COMRCACN"
+      ],
+      "psContract": "2364",
+      "powerPrice": 13.4
     }
   ]
 }
