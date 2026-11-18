@@ -1,4 +1,4 @@
-import {billingCatalog,billingRows,billingXlsx} from '../server/billing.mjs';
+import {billingCatalog,billingRows,billingXlsx,billingComparison} from '../server/billing.mjs';
 import {validateContract,validateGeneration} from '../server/model.mjs';
 const CONNECTOR='connector_76869538009648d5b282a4bb21c3d157',REPOSITORY='daniraggio/sgi';
 const json=(status,body)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
@@ -13,7 +13,7 @@ export function createHandler(assets){return {async fetch(request,env,ctx){const
    const file=await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/dte-billing.json',ref:'main'}),data=JSON.parse(file.content);
    if(url.pathname.endsWith('/catalog'))return json(200,{periods:billingCatalog(data)});
    const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await stateFromGitHub(binding),rows=billingRows(state,data,month,edition);
-   return new Response(billingXlsx(rows,month),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
+   return new Response(billingXlsx(rows,month,edition==='II'?billingComparison(state,data,month):null),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
   }
   if(url.pathname==='/api/state'&&request.method==='GET'){const {state}=await stateFromGitHub(binding);return json(200,{...state,storage:'github',repository:REPOSITORY})}
   if((/^\/api\/contracts(?:\/[^/]+)?$/.test(url.pathname)&&['POST','PUT','DELETE'].includes(request.method))||(url.pathname==='/api/generation'&&request.method==='PUT')){
