@@ -1,2 +1,57 @@
-# sgi
-Tablero SGI
+# SGI · Energía y potencia
+
+Tablero de OESC y OECC con histórico, proyecciones, cartera compacta y gestión persistente de contratos.
+
+## Ejecutar
+
+Requiere Node.js 22 o posterior. No hay dependencias npm que instalar.
+
+```bash
+npm start
+```
+
+Abrir http://127.0.0.1:4173. Para reconstruir el HTML desde las fuentes:
+
+```bash
+python3 build.py
+npm test
+```
+
+## Datos y guardado
+
+- `source_data/`: datos de origen extraídos de las planillas. Se conservan como fuente.
+- `data.json`: histórico y proyecciones del tablero anterior, con sus ajustes confirmados.
+- `data/state.json`: contratos editables, revisión y registro de altas, modificaciones y archivo.
+- `migrate_contracts.py`: migración inicial reproducible de 59 filas de contratos. No ejecutarla sobre una base editada: reemplaza `data/state.json`.
+
+En modo local, las altas y modificaciones se escriben de forma atómica en `data/state.json`, dentro de esta copia del repositorio. No se guardan solamente en el navegador. Para subir cambios locales a GitHub se usa Git.
+
+Para guardado directo en GitHub desde un servidor, configurar `GITHUB_TOKEN` como secreto del servidor, con permiso Contents de lectura/escritura limitado a este repositorio. Configurar también `GITHUB_REPOSITORY=daniraggio/sgi` y opcionalmente `GITHUB_BRANCH=main`. Cada guardado crea un commit; la revisión y el SHA evitan sobrescribir cambios simultáneos. La conexión de GitHub en ChatGPT permite mantener este repositorio, pero no entrega una credencial al servidor de la aplicación.
+
+Los secretos nunca se incluyen en HTML ni en el repositorio. La API no expone rutas arbitrarias de archivos. El servidor escucha en 127.0.0.1 por defecto. Para publicarlo, colocarlo detrás de HTTPS y un control de acceso de usuarios; no exponer directamente una instancia sin autenticación. `HOST` y `PORT` se pueden configurar desde el servidor.
+
+## Uso
+
+En **Clientes y contratos** se puede dar de alta un cliente y definir sociedad, producto, NEMO, proveedor, inicio/fin, volumen mensual y venta fija o por temporada. Se permiten excepciones mensuales y archivo reversible. Los meses inicial y final se incluyen, sin renovación automática.
+
+En **Cartera · energía mensual**:
+
+- **Entregas reales y previstas** conserva el histórico y las proyecciones de las planillas.
+- **Volumen contratado** usa la base editable y refleja inmediatamente las altas y modificaciones. La venta nominal es volumen por precio, sin interpretarla como facturación o margen.
+- Las filas son compactas; la primera columna y los encabezados quedan fijos. El NEMO se puede mostrar, y el botón **12 meses** reduce el período visible.
+
+Un contrato nuevo no implica entrega garantizada. No se inventa generación ni se agregan ventas reales al ingresarlo. La asignación física de entregas y el recálculo de despacho deben resolverse aparte. Las cantidades de potencia están en MW-hrp, separadas de MWh y MW. Las filas de potencia importadas usan los MW-hrp previstos en MATP, no los MW nominales contratados.
+
+El histórico está cerrado a septiembre de 2026. Las reglas confirmadas de precios, generación y márgenes se conservan en los archivos del modelo. Los contratos editables no reescriben facturas históricas.
+
+## Publicación
+
+Este proyecto tiene backend Node.js: GitHub Pages por sí solo no ejecuta las altas y modificaciones. Se puede ejecutar en un servidor compatible con Node y volumen persistente, o con guardado remoto en GitHub.
+
+El repositorio contiene información comercial. Su visibilidad en GitHub determina quién puede consultar los archivos.
+
+## Versión online en Sites
+
+`build_worker.py` prepara el Worker que sirve el tablero y guarda contratos directamente en GitHub con la conexión del visitante. Requiere la declaración del plugin GitHub en el alojamiento y una sesión de ChatGPT con permiso de escritura sobre el repositorio. No usa ni copia tokens del visitante. La versión online conserva el acceso privado del tablero anterior. El repositorio y su visibilidad son independientes del acceso al tablero.
+
+El guardado requiere el clic explícito en Guardar/Archivar. Las peticiones sin sesión, de otro origen o con una revisión obsoleta se rechazan. Los errores de autorización no se reintentan automáticamente.
