@@ -17,6 +17,14 @@ export function billingRows(state,data,month,edition){
  }
  return result;
 }
+
+export function fneeRate(config,month){const rate=config?.rates?.[month]?.arsPerMWh;if(typeof rate!=='number'||!Number.isFinite(rate)||rate<0)throw {status:422,error:'Falta cargar el FNEE de '+month+' en ARS/MWh. No se reutiliza el valor de otro mes.'};return rate;}
+export function invoiceLines(rows,month,config){
+ const ordered=[...rows].sort((a,b)=>{const pa=a.ps==null?'':String(a.ps),pb=b.ps==null?'':String(b.ps);return (!pa)-(!pb)||pa.localeCompare(pb,'es',{numeric:true})||a.nemo.localeCompare(b.nemo)||((a.unit==='MWh'?0:1)-(b.unit==='MWh'?0:1))||(a.supplier||'').localeCompare(b.supplier||'');});
+ const rate=ordered.some(r=>r.unit==='MWh')?fneeRate(config,month):null;
+ return ordered.flatMap(r=>[{...r,line:r.unit==='MWh'?'Energías renovables':'Potencia',currency:'USD'},...(r.unit==='MWh'?[{...r,line:'Fondo Nacional de Energía Eléctrica (FNEE)',price:rate,currency:'ARS'}]:[])]);
+}
+
 // Small, uncompressed OOXML ZIP: typed cells, no styles or external dependencies.
 const enc=new TextEncoder();
 const xml=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -33,8 +41,8 @@ export function billingComparison(state,data,month){
  }
  return [...items.values()].sort((a,b)=>a.society.localeCompare(b.society)||a.nemo.localeCompare(b.nemo)||a.unit.localeCompare(b.unit)).map(r=>({...r,qI:Math.round(r.qI*1e6)/1e6,qII:Math.round(r.qII*1e6)/1e6,difference:Math.round((r.qII-r.qI)*1e6)/1e6,status:!r.presentI?'Solo en DTE II':!r.presentII?'Solo en DTE I':Math.abs(r.qII-r.qI)<1e-9?'Sin cambio':'Modificado'}));
 }
-export function billingXlsx(rows,month,comparison=null,businessUnits={}){
- const sheets=['OESC','OECC',...(rows.AET?.length?['AET']:[])].map(soc=>({name:soc,rows:[['Unidad de negocio',soc==='OESC'?'BIDEI':soc==='OECC'?'BIHCC':businessUnits.AET||'PENDIENTE'],['Año suministro',Number(month.slice(0,4))],['Mes suministro',Number(month.slice(5))],['Tipo de facturación','Provisorio'],[],['Contrato PS','Cliente','NEMO','Línea de facturación','Cantidad','Unidad','Precio (USD/unidad)','Observación'],...rows[soc].map(r=>[r.ps,r.client,r.nemo,r.unit==='MWh'?'Energías renovables':'Potencia',r.q,r.unit,r.price,[r.notes,soc==='AET'&&!businessUnits.AET?'Completar unidad de negocio AET.':''].filter(Boolean).join(' ')])]}));
+export function billingXlsx(rows,month,comparison=null,businessUnits={},fundRates={}){
+ const sheets=['OESC','OECC',...(rows.AET?.length?['AET']:[])].map(soc=>({name:soc,rows:[['Unidad de negocio',soc==='OESC'?'BIDEI':soc==='OECC'?'BIHCC':businessUnits.AET||'PENDIENTE'],['Año suministro',Number(month.slice(0,4))],['Mes suministro',Number(month.slice(5))],['Tipo de facturación','Provisorio'],[],['Contrato PS','Cliente','NEMO','Línea de facturación','Cantidad','Unidad','Precio (moneda/unidad)','Moneda','Observación'],...invoiceLines(rows[soc],month,fundRates).map(r=>[r.ps,r.client,r.nemo,r.line,r.q,r.unit,r.price,r.currency,[r.notes,soc==='AET'&&!businessUnits.AET?'Completar unidad de negocio AET.':''].filter(Boolean).join(' ')])]}));
  if(comparison!==null)sheets.push({name:'Comparación DTE I vs II',rows:[['Año suministro',Number(month.slice(0,4))],['Mes suministro',Number(month.slice(5))],['Criterio','Diferencia = cantidad DTE II menos cantidad DTE I. Se suman entregas por sociedad, NEMO y producto; no se mezclan MWh y MWhrp.'],[],['Sociedad','Cliente','NEMO','Producto','Unidad','Cantidad DTE I','Cantidad DTE II','Diferencia II - I','Estado'],...comparison.map(r=>[r.society,r.client,r.nemo,r.unit==='MWh'?'Energía':'Potencia',r.unit,r.qI,r.qII,r.difference,r.status])]});
  const files={'[Content_Types].xml':'<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+'</Types>',
  '_rels/.rels':'<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
