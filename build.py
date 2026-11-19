@@ -75,7 +75,7 @@ for m in data['months']:
   m['margin']-=m['commission']
 # Verified October DTE I quantities and the supplied invoicing workbooks.
 actual=json.loads((pathlib.Path(__file__).parent/'source_data/october_2026_actuals.json').read_text())
-data['actualThrough']=actual['month'];data['actualGeneration']={actual['month']:actual['generation']}
+data['actualThrough']=actual['month'];data['actualEditions']={actual['month']:actual['edition']};data['actualGeneration']={actual['month']:actual['generation']}
 data['months'].append(actual['oescSummary']);data['ops'].extend(actual['oescEnergy'])
 data['forecast']=[m for m in data['forecast'] if m['date']>actual['month']]
 for m in data['forecast']:
