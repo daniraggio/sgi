@@ -81,5 +81,5 @@ export function projectPower(state){
 
 export function billingTerms(state,contract){
  const nemos=contract.nemo.split(' / '),profile=(state.billingProfiles||[]).find(p=>p.society===contract.society&&nemos.every(n=>p.nemos.includes(n)));
- return {psContract:contract.psContract||profile?.psContract||'',powerPrice:profile?.powerPrice??null};
+ return {psContract:contract.psContract||profile?.psContract||'',powerPrice:profile?.powerPrice??null,energyInvoicePrice:profile?.energyInvoicePrice??null,energyCommission:profile?.energyCommission??0};
 }
