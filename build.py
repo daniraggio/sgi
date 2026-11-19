@@ -63,6 +63,24 @@ for c in range(18,46):
  if not isinstance(generation,(int,float)):continue
  oecc_capacity.append(dict(month=date,generation=generation,commercial=commercial,contracted=contracted,delivered=e[43][c-1],source=f'MATE-OECC!{col(c)}8, {col(c)}9, {col(c)}27, {col(c)}44'))
 data=dict(dteSources=json.loads((pathlib.Path(__file__).parent/'source_data/dte_sources.json').read_text()),oeccCapacity=oecc_capacity,oescPower=oesc_power,oeccEnergyCosts=seasonal_costs,oeccSpotCosts=spot_costs,months=months,ops=ops,purchases=purchases,spot=spot,power=power,forecast=forecast,calibration=calibration,oecc=oecc_actual+oecc_forecast)
+# Verified October DTE I quantities and the supplied invoicing workbooks.
+actual=json.loads((pathlib.Path(__file__).parent/'source_data/october_2026_actuals.json').read_text())
+data['actualThrough']=actual['month'];data['actualGeneration']={actual['month']:actual['generation']}
+data['months'].append(actual['oescSummary']);data['ops'].extend(actual['oescEnergy'])
+data['forecast']=[m for m in data['forecast'] if m['date']>actual['month']]
+for m in data['forecast']:
+ for o in m['operations']:
+  if o['nemo'] in ['CALSMATY','CALSMCCN','CALSMATY / CALSMCCN']:
+   o['commission']=o['q']*6;o['price']=64;o['income']+=o['commission']
+ m['revenue']=sum(o['income'] for o in m['operations'])
+
+data['oescPower']=[o for o in data['oescPower'] if o['date']!=actual['month']]+actual['oescPower']
+data['oecc']=[o for o in data['oecc'] if o['month']!=actual['month']]+actual['oecc']
+for g in data['oeccCapacity']:
+ if g['month']==actual['month']:g.update(generation=0,commercial=0,delivered=0,source=actual['source'])
+for supplier in ['GSSR','LEDLAR']:
+ rows=[o for o in actual['oescEnergy'] if o['supplier']==supplier]
+ data['purchases'].append(dict(month=10,supplier=supplier,q=sum(o['q'] for o in rows),price=rows[0]['buyprice'],gross=sum(o['cost'] for o in rows),net=sum(o['cost'] for o in rows),source=actual['source']))
 (pathlib.Path(__file__).parent/'data.json').write_text(json.dumps(data,ensure_ascii=False))
 template=(pathlib.Path(__file__).parent/'template.html').read_text()
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'forecast.html').read_text()+'<section id="overview"')
