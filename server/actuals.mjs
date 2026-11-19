@@ -5,6 +5,7 @@ export function applyActualPeriods(data,periods){
   data.months=data.months.filter(o=>recordMonth(o)!==date).concat(p.oescSummary).sort((a,b)=>recordMonth(a).localeCompare(recordMonth(b)));
   data.oescPower=data.oescPower.filter(o=>recordMonth(o)!==date).concat(p.oescPower);
   data.oecc=data.oecc.filter(o=>recordMonth(o)!==date).concat(p.oecc);
+  if(date>='2026-11'){data.aet=(data.aet||[]).filter(o=>recordMonth(o)!==date).concat(p.aet||[]);data.aetActualMonths=[...new Set([...(data.aetActualMonths||[]),date])].sort();}
   data.forecast=data.forecast.filter(o=>o.date!==date);data.actualGeneration??={};data.actualGeneration[date]=p.generation;
   data.actualSpots??={};data.actualSpots[date]=p.spot;
   data.purchases=data.purchases.filter(o=>recordMonth(o)!==date);
