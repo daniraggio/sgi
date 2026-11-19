@@ -1,19 +1,32 @@
+import {createDteService} from '../server/dte-cache.mjs';
+import {SHAREPOINT} from '../server/dte.mjs';
 import {billingCatalog,billingRows,billingXlsx,billingComparison} from '../server/billing.mjs';
 import {validateContract,validateGeneration} from '../server/model.mjs';
 const CONNECTOR='connector_76869538009648d5b282a4bb21c3d157',REPOSITORY='daniraggio/sgi';
 const json=(status,body)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
-async function invoke(binding,action,args){if(!binding)throw {status:503,error:'La conexión con GitHub no está disponible en esta solicitud.',connectorStatus:'binding_unavailable'};const result=await binding.invoke(CONNECTOR,action,args);if(result?.status!=='success')throw {status:result?.status==='reauthentication_required'?401:502,error:result?.message||'GitHub no confirmó la operación. Actualizá el listado antes de reintentar.',connectorStatus:result?.status,connectorResult:result,...(result?.status==='reauthentication_required'?{chatGPTSignInPath:'/signin-with-chatgpt?return_to=%2F'}:{})};const payload=result.result;if(payload?.structuredContent!==undefined)return payload.structuredContent;const text=payload?.content?.find(x=>x.type==='text')?.text;if(!text)throw {status:502,error:'GitHub devolvió una respuesta sin datos.'};try{return JSON.parse(text)}catch{throw {status:502,error:'GitHub devolvió un formato inesperado.'}}}
+async function invoke(binding,action,args,connector=CONNECTOR){if(!binding)throw {status:503,error:'La conexión requerida no está disponible en esta solicitud.',connectorStatus:'binding_unavailable'};const result=await binding.invoke(connector,action,args);if(result?.status!=='success')throw {status:result?.status==='reauthentication_required'?401:502,error:result?.message||'La conexión no confirmó la operación. Actualizá antes de reintentar.',connectorStatus:result?.status,connectorResult:result,...(result?.status==='reauthentication_required'?{chatGPTSignInPath:'/signin-with-chatgpt?return_to=%2F'}:{})};const payload=result.result;if(payload?.structuredContent!==undefined)return payload.structuredContent;const text=payload?.content?.find(x=>x.type==='text')?.text;if(!text)throw {status:502,error:'GitHub devolvió una respuesta sin datos.'};try{return JSON.parse(text)}catch{throw {status:502,error:'GitHub devolvió un formato inesperado.'}}}
 async function stateFromGitHub(binding){const file=await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/state.json',ref:'main'});if(!file.sha||typeof file.content!=='string')throw {status:502,error:'No se pudo leer la versión del archivo de contratos.'};const state=JSON.parse(file.content);return {state,sha:file.sha}}
-export function createHandler(assets){return {async fetch(request,env,ctx){const url=new URL(request.url);try{
+export function createHandler(assets,base={},options={}){return {async fetch(request,env,ctx){const url=new URL(request.url);try{
  if(url.pathname.startsWith('/api/')){
   if(!request.headers.get('oai-authenticated-user-id'))return json(401,{error:'Iniciá sesión para leer y guardar contratos.',chatGPTSignInPath:'/signin-with-chatgpt?return_to=%2F'});
   const binding=ctx.props?.CONNECTORS;
+  const service=createDteService({base,fetcher:options.fetcher,read:path=>invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path,ref:'main'}),write:(path,content,sha)=>invoke(binding,sha?'update_file':'create_file',{repository_full_name:REPOSITORY,branch:'main',path,content,message:'SGI: incorporar DTE y valores reales',...(sha?{sha}:{})}),sharepoint:(action,args)=>invoke(binding,action,args,SHAREPOINT)});
+  if(url.pathname==='/api/actuals'&&request.method==='GET')return json(200,await service.actuals());
+  if(['/api/dte/discover','/api/dte/prepare'].includes(url.pathname)){
+   if(request.method!=='POST')return json(405,{error:'Método no permitido'});
+   if(request.headers.get('origin')!==url.origin)return json(403,{error:'Origen no autorizado'});
+   if(request.headers.get('content-type')!=='application/json')return json(415,{error:'Se requiere JSON'});
+   const text=await request.text();if(text.length>10000)return json(413,{error:'Solicitud demasiado grande'});const input=JSON.parse(text);
+   if(url.pathname.endsWith('/discover'))return json(200,{periods:await service.discover(input.month)});
+   if(input.force!==undefined&&typeof input.force!=='boolean')return json(400,{error:'Forzar actualización debe ser verdadero o falso.'});
+   return json(200,await service.prepare(input.month,input.edition,input.force===true));
+  }
   if(url.pathname==='/api/billing'||url.pathname==='/api/billing/catalog'){
    if(request.method!=='GET')return json(405,{error:'Método no permitido'});
-   const file=await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/dte-billing.json',ref:'main'}),data=JSON.parse(file.content);
-   if(url.pathname.endsWith('/catalog'))return json(200,{periods:billingCatalog(data)});
-   const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await stateFromGitHub(binding),rows=billingRows(state,data,month,edition);
-   return new Response(billingXlsx(rows,month,edition==='II'?billingComparison(state,data,month):null),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
+   if(url.pathname.endsWith('/catalog')){const {data}=await service.index();return json(200,{periods:(data.periods||[]).map(p=>({month:p.month,edition:p.edition,processed:!!p.cachePath||base.actualEditions?.[p.month]===p.edition,processedAt:p.processedAt}))});}
+   const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await stateFromGitHub(binding),{period,first}=await service.billing(month,edition,state),rows=period.billingRows||billingRows(state,{periods:[period]},month,edition);
+   const comparison=edition==='II'?billingComparison(state,{periods:[{...first,rows:first.rows},{...period,rows:period.rows}]},month):null;
+   return new Response(billingXlsx(rows,month,comparison),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
   }
   if(url.pathname==='/api/state'&&request.method==='GET'){const {state}=await stateFromGitHub(binding);return json(200,{...state,storage:'github',repository:REPOSITORY})}
   if((/^\/api\/contracts(?:\/[^/]+)?$/.test(url.pathname)&&['POST','PUT','DELETE'].includes(request.method))||(url.pathname==='/api/generation'&&request.method==='PUT')){
