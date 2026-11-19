@@ -10,7 +10,7 @@ export function billingRows(state,data,month,edition){
   const prices=[...new Set(candidates.map(c=>c.monthlyPrices?.[month]??((+month.slice(5)>=5&&+month.slice(5)<=9)?c.winterPrice:c.summerPrice)))];
   const terms=billingTerms(state,{society:r.society,nemo:r.nemo});
   r.ps=terms.psContract||candidates.find(c=>c.psContract)?.psContract||r.ps||null;
-  if(kind==='power'&&terms.powerPrice!=null)r.price=terms.powerPrice;else if(prices.length===1)r.price=prices[0];else if(prices.length>1){r.price=null;r.notes='Hay más de un precio para este NEMO; revisar antes de facturar.';}
+  if(kind==='energy'&&terms.energyInvoicePrice!=null)r.price=terms.energyInvoicePrice;else if(kind==='power'&&terms.powerPrice!=null)r.price=terms.powerPrice;else if(prices.length===1)r.price=prices[0];else if(prices.length>1){r.price=null;r.notes='Hay más de un precio para este NEMO; revisar antes de facturar.';}
   if(!Number.isFinite(r.q)||r.q<0)throw Error('Cantidad DTE inválida para '+r.nemo);
   if(!r.ps&&!r.notes)r.notes='Completar Contrato PS.';
   result[r.society].push(r);
