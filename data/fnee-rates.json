@@ -1,0 +1,627 @@
+{
+  "currency": "ARS",
+  "quantityUnit": "MWh",
+  "priceUnit": "ARS/MWh",
+  "rates": {
+    "2019-08": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "F64",
+      "monthCell": "F3"
+    },
+    "2019-09": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "G64",
+      "monthCell": "G3"
+    },
+    "2019-10": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "H64",
+      "monthCell": "H3"
+    },
+    "2019-11": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "I64",
+      "monthCell": "I3"
+    },
+    "2019-12": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "J64",
+      "monthCell": "J3"
+    },
+    "2020-01": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "K64",
+      "monthCell": "K3"
+    },
+    "2020-02": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "L64",
+      "monthCell": "L3"
+    },
+    "2020-03": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "M64",
+      "monthCell": "M3"
+    },
+    "2020-04": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "N64",
+      "monthCell": "N3"
+    },
+    "2020-05": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "O64",
+      "monthCell": "O3"
+    },
+    "2020-06": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "P64",
+      "monthCell": "P3"
+    },
+    "2020-07": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "Q64",
+      "monthCell": "Q3"
+    },
+    "2020-08": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "R64",
+      "monthCell": "R3"
+    },
+    "2020-09": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "S64",
+      "monthCell": "S3"
+    },
+    "2020-10": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "T64",
+      "monthCell": "T3"
+    },
+    "2020-11": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "U64",
+      "monthCell": "U3"
+    },
+    "2020-12": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "V64",
+      "monthCell": "V3"
+    },
+    "2021-01": {
+      "arsPerMWh": 80,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "W64",
+      "monthCell": "W3"
+    },
+    "2021-02": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "X64",
+      "monthCell": "X3"
+    },
+    "2021-03": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "Y64",
+      "monthCell": "Y3"
+    },
+    "2021-04": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "Z64",
+      "monthCell": "Z3"
+    },
+    "2021-05": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AA64",
+      "monthCell": "AA3"
+    },
+    "2021-06": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AB64",
+      "monthCell": "AB3"
+    },
+    "2021-07": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AC64",
+      "monthCell": "AC3"
+    },
+    "2021-08": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AD64",
+      "monthCell": "AD3"
+    },
+    "2021-09": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AE64",
+      "monthCell": "AE3"
+    },
+    "2021-10": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AF64",
+      "monthCell": "AF3"
+    },
+    "2021-11": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AG64",
+      "monthCell": "AG3"
+    },
+    "2021-12": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AH64",
+      "monthCell": "AH3"
+    },
+    "2022-01": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AI64",
+      "monthCell": "AI3"
+    },
+    "2022-02": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AJ64",
+      "monthCell": "AJ3"
+    },
+    "2022-03": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AK64",
+      "monthCell": "AK3"
+    },
+    "2022-04": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AL64",
+      "monthCell": "AL3"
+    },
+    "2022-05": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AM64",
+      "monthCell": "AM3"
+    },
+    "2022-06": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AN64",
+      "monthCell": "AN3"
+    },
+    "2022-07": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AO64",
+      "monthCell": "AO3"
+    },
+    "2022-08": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AP64",
+      "monthCell": "AP3"
+    },
+    "2022-09": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AQ64",
+      "monthCell": "AQ3"
+    },
+    "2022-10": {
+      "arsPerMWh": 160,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AR64",
+      "monthCell": "AR3"
+    },
+    "2022-11": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AS64",
+      "monthCell": "AS3"
+    },
+    "2022-12": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AT64",
+      "monthCell": "AT3"
+    },
+    "2023-01": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AU64",
+      "monthCell": "AU3"
+    },
+    "2023-02": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AV64",
+      "monthCell": "AV3"
+    },
+    "2023-03": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AW64",
+      "monthCell": "AW3"
+    },
+    "2023-04": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AX64",
+      "monthCell": "AX3"
+    },
+    "2023-05": {
+      "arsPerMWh": 320,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AY64",
+      "monthCell": "AY3"
+    },
+    "2023-06": {
+      "arsPerMWh": 512,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "AZ64",
+      "monthCell": "AZ3"
+    },
+    "2023-07": {
+      "arsPerMWh": 512,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BA64",
+      "monthCell": "BA3"
+    },
+    "2023-08": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BB64",
+      "monthCell": "BB3"
+    },
+    "2023-09": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BC64",
+      "monthCell": "BC3"
+    },
+    "2023-10": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BD64",
+      "monthCell": "BD3"
+    },
+    "2023-11": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BE64",
+      "monthCell": "BE3"
+    },
+    "2023-12": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BF64",
+      "monthCell": "BF3"
+    },
+    "2024-01": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BG64",
+      "monthCell": "BG3"
+    },
+    "2024-02": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BH64",
+      "monthCell": "BH3"
+    },
+    "2024-03": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BI64",
+      "monthCell": "BI3"
+    },
+    "2024-04": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BJ64",
+      "monthCell": "BJ3"
+    },
+    "2024-05": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BK64",
+      "monthCell": "BK3"
+    },
+    "2024-06": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BL64",
+      "monthCell": "BL3"
+    },
+    "2024-07": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BM64",
+      "monthCell": "BM3"
+    },
+    "2024-08": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BN64",
+      "monthCell": "BN3"
+    },
+    "2024-09": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BO64",
+      "monthCell": "BO3"
+    },
+    "2024-10": {
+      "arsPerMWh": 717,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BP64",
+      "monthCell": "BP3"
+    },
+    "2024-11": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BQ64",
+      "monthCell": "BQ3"
+    },
+    "2024-12": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BR64",
+      "monthCell": "BR3"
+    },
+    "2025-01": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BS64",
+      "monthCell": "BS3"
+    },
+    "2025-02": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BT64",
+      "monthCell": "BT3"
+    },
+    "2025-03": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BU64",
+      "monthCell": "BU3"
+    },
+    "2025-04": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BV64",
+      "monthCell": "BV3"
+    },
+    "2025-05": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BW64",
+      "monthCell": "BW3"
+    },
+    "2025-06": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BX64",
+      "monthCell": "BX3"
+    },
+    "2025-07": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BY64",
+      "monthCell": "BY3"
+    },
+    "2025-08": {
+      "arsPerMWh": 1500,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "BZ64",
+      "monthCell": "BZ3"
+    },
+    "2025-09": {
+      "arsPerMWh": 1647,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CA64",
+      "monthCell": "CA3"
+    },
+    "2025-10": {
+      "arsPerMWh": 1647,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CB64",
+      "monthCell": "CB3"
+    },
+    "2025-11": {
+      "arsPerMWh": 1704,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CC64",
+      "monthCell": "CC3"
+    },
+    "2025-12": {
+      "arsPerMWh": 1704,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CD64",
+      "monthCell": "CD3"
+    },
+    "2026-01": {
+      "arsPerMWh": 2029,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CE64",
+      "monthCell": "CE3"
+    },
+    "2026-02": {
+      "arsPerMWh": 2029,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CF64",
+      "monthCell": "CF3"
+    },
+    "2026-03": {
+      "arsPerMWh": 2029,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CG64",
+      "monthCell": "CG3"
+    },
+    "2026-04": {
+      "arsPerMWh": 2029,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CH64",
+      "monthCell": "CH3"
+    },
+    "2026-05": {
+      "arsPerMWh": 2280,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CI64",
+      "monthCell": "CI3"
+    },
+    "2026-06": {
+      "arsPerMWh": 2280,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CJ64",
+      "monthCell": "CJ3"
+    },
+    "2026-07": {
+      "arsPerMWh": 2280,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CK64",
+      "monthCell": "CK3"
+    },
+    "2026-08": {
+      "arsPerMWh": 2508,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CL64",
+      "monthCell": "CL3"
+    },
+    "2026-09": {
+      "arsPerMWh": 2508,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CM64",
+      "monthCell": "CM3",
+      "corroboratedBy": {
+        "file": "Facturacion OECC - Sep26(2).xlsx",
+        "sheet": "Facturacion Energia",
+        "cell": "E9"
+      }
+    },
+    "2026-10": {
+      "arsPerMWh": 2508,
+      "sourceFile": "Facturacion_OESC_Oct26(1).xlsx",
+      "sheet": "Resumen",
+      "cell": "CN64",
+      "monthCell": "CN3",
+      "corroboratedBy": {
+        "file": "Facturacion OECC - Oct26.xlsx",
+        "sheet": "Facturacion Energia",
+        "cell": "E9"
+      },
+      "confirmedByUser": true
+    }
+  }
+}
