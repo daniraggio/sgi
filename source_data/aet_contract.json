@@ -1,0 +1,21 @@
+{
+  "society": "AET",
+  "name": "Aconcagua Energia Trading",
+  "nemo": "ACONENEO",
+  "sourceFile": "Planilla de seguimiento contratos v2(2).xlsx",
+  "sheet": "MATE-AET",
+  "row": 13,
+  "client": "NOVA",
+  "clientNemo": "NOENCRUN",
+  "agreement": "1542",
+  "psContract": null,
+  "memnetContract": null,
+  "priority": 1,
+  "start": "2026-11",
+  "end": "2027-10",
+  "monthlyCapMWh": 100,
+  "salePriceUSDperMWh": 64,
+  "purchaseSummerUSDperMWh": 45,
+  "purchaseWinterUSDperMWh": 62,
+  "deliveryFormula": "S30 = S13 (100 MWh en la planilla); en el tablero la asignación queda limitada por el suministro de OECC a ACONENEO."
+}
