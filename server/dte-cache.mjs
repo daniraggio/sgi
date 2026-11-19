@@ -1,3 +1,4 @@
+import {fneeRate} from './billing.mjs';
 import {discoverDte,downloadDte,extractDte,completeDte,validatePeriod} from './dte.mjs';
 const cachePath=(month,edition)=>'data/dte/'+month+'-'+edition+'.json';
 const cacheMatch=(p,m,e)=>p.month===m&&p.edition===e;
@@ -9,7 +10,7 @@ export function createDteService({read,write,sharepoint,base,fetcher,extractor=e
   validatePeriod(month,edition);const first=await index(),entry=first.data.periods?.find(p=>cacheMatch(p,month,edition));
   if(entry&&!force&&(entry.cachePath||base.actualEditions?.[month]===edition)){const cached=await period(first.data,month,edition);return {cached:true,applied:false,processedAt:cached.processedAt,month,edition};}
   const available=await discoverDte(sharepoint,month),source=available.find(p=>p.edition===edition);if(!source)throw {status:404,error:'No se encontró DTE '+edition+' de '+month+' en SharePoint. Se conserva el tablero.'};
-  const bytes=await downloadDte(sharepoint,source,fetcher),raw=extractor(bytes,month,edition),state=JSON.parse((await read('data/state.json')).content),built=completeDte(raw,state,first.data,base);built.source=source;
+  const bytes=await downloadDte(sharepoint,source,fetcher),raw=extractor(bytes,month,edition),state=JSON.parse((await read('data/state.json')).content),built=completeDte(raw,state,first.data,base);built.source=source;if(built.rows.some(r=>r.unit==='MWh'))fneeRate(JSON.parse((await read('data/fnee-rates.json')).content),month);
   if(edition==='II'&&!first.data.periods?.some(p=>cacheMatch(p,month,'I')))throw {status:422,error:'Primero generá la facturación DTE I de este mes para poder comparar ambas versiones.'};
   // Re-read before persisting so a concurrent request cannot silently replace another edition.
   const current=await index(),existing=current.data.periods?.find(p=>cacheMatch(p,month,edition));if(existing?.cachePath&&!force)return {cached:true,applied:false,month,edition};
