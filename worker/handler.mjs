@@ -26,7 +26,7 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
    if(url.pathname.endsWith('/catalog')){const {data}=await service.index();return json(200,{periods:(data.periods||[]).map(p=>({month:p.month,edition:p.edition,processed:!!p.cachePath||base.actualEditions?.[p.month]===p.edition,processedAt:p.processedAt}))});}
    const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await stateFromGitHub(binding),{period,first}=await service.billing(month,edition,state),rows=period.billingRows||billingRows(state,{periods:[period]},month,edition);
    const comparison=edition==='II'?billingComparison(state,{periods:[{...first,rows:first.rows},{...period,rows:period.rows}]},month):null;
-   return new Response(billingXlsx(rows,month,comparison),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
+   return new Response(billingXlsx(rows,month,comparison,{AET:state.societies?.AET?.businessUnit}),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
   }
   if(url.pathname==='/api/state'&&request.method==='GET'){const {state}=await stateFromGitHub(binding);return json(200,{...state,storage:'github',repository:REPOSITORY})}
   if((/^\/api\/contracts(?:\/[^/]+)?$/.test(url.pathname)&&['POST','PUT','DELETE'].includes(request.method))||(url.pathname==='/api/generation'&&request.method==='PUT')){
