@@ -22,7 +22,7 @@ export function fneeRate(config,month){const rate=config?.rates?.[month]?.arsPer
 export function invoiceLines(rows,month,config){
  const ordered=[...rows].sort((a,b)=>{const pa=a.ps==null?'':String(a.ps),pb=b.ps==null?'':String(b.ps);return (!pa)-(!pb)||pa.localeCompare(pb,'es',{numeric:true})||a.nemo.localeCompare(b.nemo)||((a.unit==='MWh'?0:1)-(b.unit==='MWh'?0:1))||(a.supplier||'').localeCompare(b.supplier||'');});
  const rate=ordered.some(r=>r.unit==='MWh')?fneeRate(config,month):null;
- return ordered.flatMap(r=>[{...r,line:r.unit==='MWh'?'Energías renovables':'Potencia',currency:'USD'},...(r.unit==='MWh'?[{...r,line:'Fondo Nacional de Energía Eléctrica (FNEE)',price:rate,currency:'ARS'}]:[])]);
+ return ordered.flatMap(r=>[{...r,line:r.unit==='MWh'?'Energías renovables':'Potencia',currency:'USD'},...(r.unit==='MWh'?[{...r,line:'FNEE',price:rate,currency:'ARS'}]:[])]);
 }
 
 // Small, uncompressed OOXML ZIP: typed cells, no styles or external dependencies.
