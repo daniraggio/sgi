@@ -44,7 +44,7 @@ En **Cartera · energía mensual**:
 
 Un contrato nuevo no implica entrega garantizada. No se inventa generación ni se agregan ventas reales al ingresarlo. La asignación comercial prevista se calcula por generador con la generación estimada, y no representa un despacho físico confirmado. Las cantidades de potencia están en MW-hrp, separadas de MWh y MW. Las filas de potencia importadas usan los MW-hrp previstos en MATP, no los MW nominales contratados. Las prioridades se recuperan de la columna G de la hoja de origen; una prioridad no definida se muestra como tal, sin asignarla por defecto. Cambiar una prioridad en la ficha no reescribe las facturas ni recalcula la asignación física del histórico.
 
-El histórico está cerrado a septiembre de 2026. Las reglas confirmadas de precios, generación y márgenes se conservan en los archivos del modelo. Los contratos editables no reescriben facturas históricas.
+El histórico está cerrado a octubre de 2026 (DTE I para octubre). Las reglas confirmadas de precios, generación y márgenes se conservan en los archivos del modelo. Los contratos editables no reescriben facturas históricas.
 
 ## Publicación
 
@@ -70,7 +70,7 @@ Para cada generador y mes se calcula sobre todos los contratos activos, antes de
 
 La regla reproduce MATE-OESC filas 45–57 y MATE-OECC filas 30–38 del archivo original. En OECC se conserva el porcentaje comercializable mensual de la fila 9 respecto de la fila 8; editar generación escala esa disponibilidad. El contrato OECC → OESC tiene `linkedDemand`: su tope se obtiene de los contratos OESC abastecidos por Alto Valle, como la referencia original a MATE-OESC fila 82. La entrega de OECC limita el abastecimiento de OESC para repartirlo entre sus clientes. No se suman ambas sociedades como una venta consolidada.
 
-Santa Rosa conserva octubre de 2026 en **1.080 MWh**, y Chepes **120 MWh/mes hasta enero de 2027**. El excedente de Santa Rosa se valoriza a 40,80 USD/MWh; los demás excedentes se muestran sin inventar una venta. Los importes conservan las reglas comerciales confirmadas y la precisión completa; la pantalla redondea los MWh.
+Santa Rosa conserva **1.080 MWh** en el plan original de octubre; el suministro real de octubre es **1.013,382 MWh**, según DTE I, y Chepes **120 MWh/mes hasta enero de 2027**. El excedente de Santa Rosa se valoriza a 40,80 USD/MWh; los demás excedentes se muestran sin inventar una venta. Los importes conservan las reglas comerciales confirmadas y la precisión completa; la pantalla redondea los MWh.
 
 `PUT /api/generation` usa la misma autenticación, validación de origen, revisión y SHA que los contratos. La auditoría registra generador, mes y valor. Una revisión obsoleta no sobrescribe cambios.
 
@@ -83,4 +83,19 @@ En **Histórico real → Fuentes DTE de energía suministrada** se indica la par
 - Agosto: complemento DTE II `Contratos_R400_2026-08_V2.xlsx`, hoja `MATE-MATER MENSUAL`, columna P (Energía Total, MWh). Se toma el complemento como fuente del detalle, sin sumarlo al Access.
 - Septiembre: `MATE_MATER.ENERGIA_TOTAL`. Se suman registros de contratos y unidades; las facturas a comercializadoras se contrastan agrupando `COMERCIA`.
 
-`source_data/dte_sources.json` contiene solo referencias y versiones de los archivos usados, con sus hashes; no contiene registros de entregas extraídos de los DTE. No se usan importes del DTE para modificar precios de la planilla. El histórico contrastado llega a septiembre de 2026; la energía de octubre en adelante sigue siendo una simulación hasta incorporar el DTE correspondiente.
+`source_data/dte_sources.json` contiene solo referencias y versiones de los archivos usados, con sus hashes; no contiene registros de entregas extraídos de los DTE. No se usan importes del DTE para modificar precios de la planilla. El histórico contrastado llega a octubre de 2026: DTE I para octubre. Las proyecciones visibles comienzan en noviembre.
+
+## Edición puntual de celdas
+
+En Clientes y contratos, pasar el cursor por un volumen muestra el acceso al precio mensual; el volumen se edita haciendo clic sobre su número. La columna de precios también permite elegir y editar un mes. Con teclado se accede con Tab y Enter.
+
+El editor guarda una excepción del campo y mes elegidos, sin alterar el resto del contrato. Energía modifica el tope contratado y recalcula la asignación por prioridad, cartera e importes. La asignación mostrada puede ser menor al tope si falta generación. Potencia actualiza el volumen o precio mensual y la correspondiente transferencia OECC → OESC. Los topes intercompañía vinculados se siguen calculando a partir de los contratos de OESC.
+
+Guardar usa la misma API protegida, revisión y control de concurrencia que la ficha completa. Cancelar o Escape cierra la edición sin guardarla. No hay guardado automático al pasar el cursor. Se admiten coma y punto decimal; no se admiten separadores de miles.
+
+## Cuadros por generador
+
+Clientes y contratos presenta un cuadro separado por sociedad y generador. En energía de OESC, cada cuadro contiene dos tablas simultáneas: primero topes contratados, editables por mes; después energía suministrada/prevista, calculada por prioridades y disponibilidad de generación. Las dos tablas conservan las mismas filas, columnas mensuales y subtotales por prioridad para compararlas. La segunda incluye un bloque real por NEMO del DTE I para octubre, sin atribuirlo a prioridades; desde noviembre muestra proyecciones con el mismo cálculo que la cartera. El CSV identifica a qué vista pertenece cada fila.
+
+
+Octubre 2026 incorporado como real según DTE I y facturación OESC/OECC verificada por NEMO. Base trazable: `source_data/october_2026_actuals.json`. CALSA: factura 64 USD/MWh, comisión 6 USD/MWh y neto comercial 58 USD/MWh; contratos conservan precio neto. Proyecciones visibles desde noviembre, sin duplicar octubre al recalcular. Para regenerar los archivos distribuidos: `python build.py` y `python build_worker.py`.
