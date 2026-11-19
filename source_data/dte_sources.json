@@ -83,5 +83,13 @@
     "member": "Contratos_R400_2026-08_V2.xlsx",
     "sheet": "MATE-MATER MENSUAL",
     "note": "Fuente preferida de agosto: incluye renovables omitidas del detalle Access. Térmica coincide con Access."
+  },
+  {
+    "month": "2026-10",
+    "name": "DTE2610.mdb",
+    "url": "https://aconcaguaenergia.sharepoint.com/sites/aconcaguaenergia/Documentos%20compartidos/Comercial%20y%20Regulatorio/Energ%C3%ADa%20El%C3%A9ctrica/01%20-%20Transacciones%20Economicas/04%20-%20DTE/2026/10%20-%20Oct%2026/DTE%20I/DTE2610.mdb",
+    "edition": "I",
+    "modified": "2026-11-16T14:51:29Z",
+    "sha256": "6bcab1031143b0e5454559cbaa8427dd596c466de8c02e5b21dc80841b8f6702"
   }
 ]
