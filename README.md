@@ -4,7 +4,7 @@ Tablero de OESC y OECC con histórico, proyecciones, cartera compacta y gestión
 
 ## Ejecutar
 
-Requiere Node.js 22 o posterior. No hay dependencias npm que instalar.
+Requiere Node.js 22 o posterior. Instalá las dependencias con `npm ci`; incluyen el lector Access y el empaquetador del Worker.
 
 ```bash
 SGI_PASSWORD="tu_clave_privada" npm start
@@ -99,3 +99,19 @@ Clientes y contratos presenta un cuadro separado por sociedad y generador. En en
 
 
 Octubre 2026 incorporado como real según DTE I y facturación OESC/OECC verificada por NEMO. Base trazable: `source_data/october_2026_actuals.json`. CALSA: factura 64 USD/MWh, comisión 6 USD/MWh y neto comercial 58 USD/MWh; contratos conservan precio neto. Proyecciones visibles desde noviembre, sin duplicar octubre al recalcular. Para regenerar los archivos distribuidos: `python build.py` y `python build_worker.py`.
+
+
+## Actualizar DTE desde SharePoint y aplicar reales
+
+En Clientes y contratos, elegir mes y DTE I o DTE II:
+
+- **Buscar DTE en SharePoint** consulta únicamente las versiones disponibles del mes seleccionado dentro de `Comercial y Regulatorio/Energía Eléctrica/01 - Transacciones Economicas/04 - DTE`. Esta consulta no cambia los reales.
+- **Descargar facturación XLSX** usa el DTE seleccionado. La primera generación lee el Access, completa precios y PS con los contratos, guarda el resultado y reemplaza las operaciones del mes como reales para OESC/OECC. Descargas siguientes reutilizan exactamente el resultado procesado, sin releer SharePoint ni escribir reales. Octubre DTE I ya incorporado se reconoce como procesado.
+- **Forzar actualización** vuelve a leer y procesar la edición elegida. No descarga automáticamente un XLSX; después se puede descargar la copia actualizada. Un DTE I no desplaza un DTE II ya aplicado.
+- DTE II agrega la hoja de comparación contra DTE I del mismo mes. DTE I debe estar incorporado para esa comparación.
+
+`POST /api/dte/discover` y `POST /api/dte/prepare` requieren identidad autenticada, origen propio y clic explícito. `GET /api/billing` nunca escribe. SharePoint se declara de solo lectura; GitHub conserva las escrituras autorizadas de contratos y datos. El servidor usa la conexión del visitante, sin guardar tokens ni URLs temporales. Los nuevos extractos se guardan como archivos inmutables en `data/dte/`; un cambio con SHA en `data/dte-billing.json` activa la versión elegida. Fallar antes de activar el índice conserva los reales anteriores. Una nueva carga del tablero recupera los reales aplicados desde GitHub.
+
+Fuentes soportadas para el importador Access: `MATE_MATER.ENERGIA_TOTAL` (MWh), `MATP.POTENCIA_CONTRATADA` (MWhrp, sumando unidades sin volver a multiplicar por horas punta), y `GenR400.GENERACION_TOTAL` (MWh). Se filtra OESC por DUKECOMO y OECC por CTALVALG; las ventas de OECC a intermediarios se agrupan por COMERCIA. Un formato sin esas tablas falla explícitamente y no reemplaza datos. Importes DTE no se usan como precios. Si falta precio de un NEMO, se informa para completar Clientes y contratos antes de aplicar el mes. CALSA conserva la comisión de 6 USD/MWh. OECC conserva referencias de 40/60 USD/MWh y 12 USD/MWhrp. La disponibilidad comercializable usa el porcentaje mensual acordado sobre la generación real.
+
+Para construir la versión online: `npm ci`, `python build.py`, `python build_worker.py`. El servidor Node local no dispone de la conexión delegada de SharePoint de Sites; la importación en línea se implementa en el Worker.
