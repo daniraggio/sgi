@@ -40,8 +40,8 @@ export const server=http.createServer(async(req,res)=>{try{
   };const next=queue.then(action);queue=next.catch(()=>{});await next;return;
  }
  if(req.method!=='GET'){reply(res,405,{error:'Método no permitido'});return}
- const paths={'/':'dist/index.html','/index.html':'dist/index.html','/contracts.js':'contracts.js','/contracts.css':'contracts.css','/model.mjs':'server/model.mjs'};
+ const paths={'/docs/INTEGRACION.md':'docs/INTEGRACION.md','/':'dist/index.html','/index.html':'dist/index.html','/contracts.js':'contracts.js','/contracts.css':'contracts.css','/model.mjs':'server/model.mjs'};
  const target=paths[url.pathname];if(!target){reply(res,404,{error:'No encontrado'});return}
- const data=await readFile(resolve(root,target));res.writeHead(200,{'Content-Type':target.endsWith('.html')?'text/html; charset=utf-8':target.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(data);
+ const data=await readFile(resolve(root,target));res.writeHead(200,{'Content-Type':target.endsWith('.html')?'text/html; charset=utf-8':target.endsWith('.css')?'text/css; charset=utf-8':target.endsWith('.md')?'text/markdown; charset=utf-8':'text/javascript; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(data);
  }catch(e){reply(res,e.status||400,{error:e.status?(e.error||e.message):'No se pudo completar la operación. Revisá los datos ingresados.'})}});
 if(process.argv[1]===fileURLToPath(import.meta.url))server.listen(+process.env.PORT||4173,process.env.HOST||'127.0.0.1',()=>console.log('SGI listo en puerto '+(+process.env.PORT||4173)));

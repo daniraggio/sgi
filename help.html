@@ -1,0 +1,130 @@
+<section id="help" class="view help-view" aria-labelledby="help-title">
+  <div class="panel help-intro">
+    <div class="eyebrow">Guía de uso y base para la integración</div>
+    <h2 id="help-title">Cómo funciona el tablero</h2>
+    <p>El tablero reúne contratos, generación, entregas, precios y márgenes de OESC, OECC y AET. Usa los contratos para proyectar y los DTE para incorporar suministros reales y preparar la facturación.</p>
+    <a class="help-download" href="/docs/INTEGRACION.md" download="SGI_integracion.md">Descargar documentación técnica</a>
+    <p class="help-caption">Esta guía describe el funcionamiento actual. La parte de integración identifica las funciones disponibles y los desarrollos pendientes.</p>
+  </div>
+  <div class="help-layout">
+    <aside class="help-index" aria-label="Índice de la guía">
+      <span>EN ESTA GUÍA</span>
+      <a href="#help-use">Uso diario</a>
+      <a href="#help-data">Datos y unidades</a>
+      <a href="#help-model">Asignación y margen</a>
+      <a href="#help-billing">DTE y facturación</a>
+      <a href="#help-storage">Guardado y acceso</a>
+      <a href="#help-integration">Integración con gestión</a>
+    </aside>
+    <div class="help-content">
+      <article id="help-use" class="panel">
+        <h3>Uso diario</h3>
+        <ol class="help-steps">
+          <li><b>Elegí la sociedad y el período.</b> Resumen muestra inicialmente el mes actual y los 11 siguientes. Contratos muestra los 3 meses anteriores, el actual y los 8 siguientes. El cambio de mes usa la hora de Argentina; podés ajustar las fechas.</li>
+          <li><b>Cargá o revisá los contratos.</b> En Contratos, separá Energía y Potencia. Cada generador muestra primero sus topes y luego los suministros reales y proyectados. En OECC, los suministros se agrupan por comercializador.</li>
+          <li><b>Ajustá la generación proyectada.</b> Las celdas habilitadas permiten cambiar un mes. La asignación de energía y la cartera se recalculan con el mismo modelo.</li>
+          <li><b>Incorporá el DTE cuando esté disponible.</b> En Facturación, elegí mes y edición I o II. La primera preparación de un DTE aplica sus suministros al tablero como reales y prepara el XLSX.</li>
+        </ol>
+        <div class="help-callout"><b>Qué cambia cada acción</b><p>Filtrar sólo cambia la vista. Editar y guardar modifica la base. Buscar DTE consulta disponibilidad; preparar una edición nueva o forzar su actualización puede reemplazar los reales de ese mes.</p></div>
+        <details><summary>Para qué sirve cada sección</summary>
+          <dl class="help-definitions"><dt>Resumen</dt><dd>Ingresos, compras y margen de energía y potencia, con sus detalles y filtros. En OECC también muestra generación, energía comercializable, contratación y energía por vender.</dd><dt>Cartera · energía mensual</dt><dd>Entregas reales y proyectadas por generador y cliente. Permite revisar el volumen mes a mes y sus subtotales.</dd><dt>Histórico real</dt><dd>Operaciones históricas incorporadas, resultado mensual y referencias de las fuentes utilizadas.</dd><dt>Contratos</dt><dd>Alta, edición y eliminación con confirmación; topes, precios, plazos, prioridades y suministros.</dd><dt>Facturación</dt><dd>Búsqueda de DTE, preparación y descarga del archivo mensual. Las versiones guardadas se reutilizan.</dd></dl>
+        </details>
+      </article>
+      <article id="help-data" class="panel">
+        <h3>Datos y unidades</h3>
+        <div class="help-table"><table><thead><tr><th>Dato</th><th>De dónde sale</th><th>Cómo se interpreta</th></tr></thead><tbody>
+          <tr><td>Contratos, plazos, topes y prioridades</td><td>Planilla de seguimiento migrada y cambios guardados en Contratos.</td><td>Definen lo contratado; un tope no garantiza que se entregue todo ese volumen.</td></tr>
+          <tr><td>Suministros reales para facturar</td><td>DTE del mes y edición seleccionados, por NEMO; Access y complemento mensual cuando corresponde.</td><td>Las cantidades del XLSX salen del DTE, no de la simulación.</td></tr>
+          <tr><td>Precios y Contrato PS</td><td>Condiciones comerciales del tablero y planillas de facturación históricas.</td><td>El importe valorizado por CAMMESA no se usa como precio de venta del contrato.</td></tr>
+          <tr><td>Generación y límite comercializable</td><td>Plan migrado, porcentaje mensual comercializable y modificaciones guardadas.</td><td>Se usan para las proyecciones; los DTE incorporados aportan la generación real disponible en su fuente.</td></tr>
+          <tr><td>Histórico inicial</td><td>Planillas de facturación incorporadas al tablero.</td><td>Los meses sin un DTE aplicado conservan su base histórica original.</td></tr>
+          <tr><td>FNEE y conversión a ARS</td><td>FNEE específico del mes guardado en el repo; tipos de cambio históricos de la base.</td><td>FNEE se factura en ARS/MWh. No se convierte usando un tipo de cambio actual.</td></tr>
+        </tbody></table></div>
+        <div class="help-unit-grid"><div><b>MWh</b><span>Energía suministrada, contratada o proyectada.</span></div><div><b>MW</b><span>Tope de potencia contratada.</span></div><div><b>MWhrp</b><span>Potencia valorizada en horas punta; unidad de cantidad en la facturación.</span></div></div>
+        <p>Los precios de energía se expresan en USD/MWh y los de potencia en USD/MWhrp. El modelo de potencia de la planilla usa 220 horas para convertir sus MW contratados a MWhrp proyectados. El real del DTE ya está acumulado: <b>no se vuelve a multiplicar por horas punta</b>.</p>
+        <p><span class="help-key help-real">Verde · real</span> <span class="help-key help-projected">Azul · proyección</span> Los volúmenes en MWh y los importes se muestran redondeados; los cálculos conservan su precisión. Los topes de potencia en MW admiten decimales.</p>
+        <p><b>«—»</b> indica ausencia de registro o de contrato en ese mes; <b>0</b> es un valor cero; <b>«Pend.»</b> indica que falta información para calcular. No son equivalentes.</p>
+      </article>
+      <article id="help-model" class="panel">
+        <h3>Cómo se asigna la energía y se calcula el margen</h3>
+        <p>La simulación trabaja por <b>sociedad, generador y mes</b>. La energía comercializable es la generación estimada multiplicada por el porcentaje habilitado de ese mes. Las compras desde OECC usan la energía asignada a esa sociedad, no una segunda generación independiente.</p>
+        <ol>
+          <li>Se atiende la prioridad 1. Si no alcanza la energía, se reparte proporcionalmente a los topes de ese grupo.</li>
+          <li>Si sobra energía, se atiende la prioridad 2 y luego las prioridades siguientes, con el mismo criterio.</li>
+          <li>Ningún contrato recibe más que su tope. Un contrato sin prioridad no recibe asignación automática. Si falta la generación, la asignación queda pendiente.</li>
+        </ol>
+        <p class="help-formula">Entrega por contrato = tope × mínimo(1; energía disponible para la prioridad ÷ suma de topes de esa prioridad)</p>
+        <p>Ejemplo ilustrativo: con 900 MWh disponibles y dos topes de 600 MWh en prioridad 1, cada contrato recibe 450 MWh. No queda energía para la prioridad 2.</p>
+        <p>OECC abastece a OESC y a AET; después cada una distribuye ese abastecimiento entre sus clientes. Por eso la simulación de Contratos y la cartera de energía deben coincidir. Las operaciones intercompañía aparecen en cada sociedad y <b>no constituyen un resultado consolidado del grupo</b>.</p>
+        <details><summary>Ingresos, costos, comisiones y saldos</summary>
+          <dl class="help-definitions"><dt>Ingreso bruto</dt><dd>Cantidad suministrada o proyectada × precio de venta aplicable al mes.</dd><dt>Margen OESC</dt><dd>Venta menos compra de energía o potencia y las comisiones registradas. El tratamiento de excedentes spot se mantiene según las reglas de cada generador. El precio bruto facturado y el ingreso neto después de comisión pueden ser distintos.</dd><dt>Margen OECC</dt><dd>La energía se compara con el costo estacional de referencia configurado; la potencia, con la referencia CAMMESA definida en el modelo. No es un resultado contable que incluya todos los costos operativos.</dd><dt>Margen AET</dt><dd>Venta a sus clientes menos el costo de la energía recibida de OECC, según la transferencia prevista.</dd><dt>Energía por vender</dt><dd>Suma de saldos mensuales positivos de energía comercializable menos contratada, desde el mes actual y dentro del período seleccionado. No compensa déficits con sobrantes de otros meses. «Próximo mes» es el primer mes con saldo positivo.</dd><dt>Energía sin contratar</dt><dd>Comercializable menos contratada. La tabla de OECC conserva el criterio de color solicitado: negativos en verde y positivos en rojo. Es un criterio distinto del color que diferencia real y proyección.</dd></dl>
+          <p>Los precios mensuales específicos prevalecen sobre el precio de temporada. Verano: octubre–abril; invierno: mayo–septiembre. Los márgenes comerciales excluyen IVA y FNEE.</p>
+        </details>
+      </article>
+      <article id="help-billing" class="panel">
+        <h3>Del DTE a la facturación</h3>
+        <ol>
+          <li><b>Localizar la fuente.</b> Se busca en SharePoint: Comercial y Regulatorio → Energía Eléctrica → 01 - Transacciones Economicas → 04 - DTE → año → mes → DTE I o II. Se reconocen subcarpetas del DTE, sufijos de edición y archivos Access comprimidos en ZIP.</li>
+          <li><b>Leer las cantidades por NEMO.</b> Se toma la edición seleccionada. En formatos anteriores se consulta el complemento MATP mensual para potencia; las hojas horarias no se suman otra vez.</li>
+          <li><b>Aplicar las condiciones comerciales.</b> Se cruzan sociedad, producto, generador y NEMO con precios y PS del tablero. Si hay más de un precio histórico sin reparto definido, se detiene la preparación para revisarlo.</li>
+          <li><b>Guardar los reales.</b> Una nueva preparación guarda un registro del DTE y activa la edición para ese mes. Repetir un DTE ya procesado reutiliza lo guardado. «Forzar actualización» vuelve a consultar la fuente y recalcula.</li>
+          <li><b>Generar y publicar el XLSX.</b> Se guarda el archivo para que quienes tienen acceso al tablero puedan descargarlo sin una conexión personal a SharePoint. Si el guardado del XLSX falla después de incorporar los reales, el tablero informa ese estado.</li>
+        </ol>
+        <details><summary>Reglas de la planilla que procesa el bot</summary>
+          <p>El archivo contiene sólo el mes elegido y separa OESC y OECC en hojas; AET se incluye cuando tiene operaciones reales. Los datos comunes van en un encabezado y las líneas se ordenan numéricamente por Contrato PS.</p>
+          <div class="help-table"><table><thead><tr><th>Sociedad / producto</th><th>Unidad de negocio</th><th>Línea de facturación</th><th>Cantidad y precio</th></tr></thead><tbody>
+            <tr><td>OESC · energía</td><td>BIDEI</td><td>Energías renovables</td><td>MWh · USD/MWh</td></tr>
+            <tr><td>OECC · energía</td><td>BIHCC</td><td>Energia</td><td>MWh · USD/MWh</td></tr>
+            <tr><td>Potencia</td><td>La de la sociedad</td><td>Potencia</td><td>MWhrp · USD/MWhrp</td></tr>
+            <tr><td>Todo suministro de energía</td><td>La de la sociedad</td><td>FNEE</td><td>Mismos MWh · tarifa mensual en ARS/MWh</td></tr>
+          </tbody></table></div>
+          <p>Tipo de facturación: Provisorio. Cliente, NEMO y Contrato PS acompañan cada línea. La unidad de negocio de AET depende de su configuración; si falta, se indica como pendiente. Un PS faltante puede quedar señalado en Observación: antes de enviar al bot hay que completarlo.</p>
+        </details>
+        <details><summary>DTE I, DTE II y actualizaciones</summary>
+          <p>DTE II agrega una hoja de comparación contra DTE I del mismo mes: cantidad II menos cantidad I, agrupada por sociedad, NEMO y producto. Si I todavía no fue incorporado, se prepara para poder comparar. Descargar o preparar I después no hace retroceder los reales que ya usan II.</p>
+          <p>Subir un archivo a SharePoint <b>no dispara por sí solo una actualización</b>. Hay que buscar o preparar el DTE desde Facturación. El cambio automático de mes sólo ajusta períodos de visualización.</p>
+          <p>Un cambio de contrato no reescribe un XLSX ya publicado. Para volver a leer y generar una edición con las condiciones vigentes se utiliza Forzar actualización. Esa acción también puede actualizar los reales.</p>
+        </details>
+        <details><summary>Qué tablas y campos del DTE se utilizan</summary>
+          <div class="help-table"><table><thead><tr><th>Fuente</th><th>Campo / hoja</th><th>Uso</th></tr></thead><tbody><tr><td>Access, formato actual</td><td><code>MATE_MATER.ENERGIA_TOTAL</code></td><td>Energía en MWh.</td></tr><tr><td>Access, formato anterior</td><td><code>MATRenov.ENERGIA_CONT</code> y <code>ANEXO_MAT_CONTRATOS.TOTAL_MWH</code></td><td>Energía en MWh, con el detalle histórico por NEMO que corresponda.</td></tr><tr><td>Access</td><td><code>MATP.POTENCIA_CONTRATADA</code></td><td>Potencia acumulada por unidades en MWhrp.</td></tr><tr><td>Complemento del mismo DTE</td><td><code>MATP MENSUAL</code> / <code>MATP_MENSUAL</code>, Potencia Cubierta</td><td>Potencia mensual cuando el Access no contiene MATP. Si omite el comercializador, se recupera su identidad del histórico por NEMO; no se toman cantidades de la planilla.</td></tr><tr><td>Access</td><td><code>GenR400.GENERACION_TOTAL</code></td><td>Generación real en MWh.</td></tr></tbody></table></div>
+          <p>OESC se identifica como comercializador DUKECOMO; OECC, como generador CTALVALG. AET usa ACONENEO. Las equivalencias de generadores permiten agrupar Santa Rosa, Chepes y Alto Valle sin volver a sumar el mismo registro.</p>
+        </details>
+      </article>
+      <article id="help-storage" class="panel">
+        <h3>Qué se guarda y quién puede acceder</h3>
+        <p>El tablero se publica en Sites. El código desplegado se versiona en el repositorio de fuente del sitio; la información comercial editable y los XLSX se guardan en <a href="https://github.com/daniraggio/sgi" target="_blank" rel="noopener">daniraggio/sgi</a>. Son repositorios distintos: publicar el sitio no sincroniza automáticamente todo su código con el repo comercial.</p>
+        <div class="help-table"><table><thead><tr><th>Ubicación</th><th>Contenido</th></tr></thead><tbody><tr><td><code>data/state.json</code></td><td>Contratos editables, generación proyectada, condiciones de facturación, revisión y registro de operaciones.</td></tr><tr><td><code>data/dte-billing.json</code></td><td>Índice de DTE incorporados y ediciones activas. También conserva registros históricos anteriores al uso de archivos separados.</td></tr><tr><td><code>data/dte/</code></td><td>Archivos de cada procesamiento de DTE con cantidades, información de facturación y datos para actualizar el tablero.</td></tr><tr><td><code>data/fnee-rates.json</code></td><td>Tarifa FNEE por mes, en ARS/MWh.</td></tr><tr><td><code>data/billing-exports.json</code> y <code>exports/billing/</code></td><td>Catálogo y archivos XLSX publicados para descarga.</td></tr><tr><td><code>data.json</code> y <code>source_data/</code> del sitio</td><td>Base histórica y planillas migradas utilizadas para construir el tablero.</td></tr></tbody></table></div>
+        <p>Al guardar contratos o generación se verifica la revisión vigente. Si otra persona guardó primero, se pide recargar antes de reintentar. El registro de operaciones guarda acción, fecha y revisión; no es todavía una auditoría completa de todos los valores anteriores y nuevos.</p>
+        <p>Eliminar un contrato exige confirmación y lo quita de las proyecciones; no borra los suministros reales ya incorporados.</p>
+        <div class="help-callout"><b>Acceso al sitio y acceso a los archivos son distintos</b><p>El sitio exige el acceso autorizado y una sesión de ChatGPT. Leer SharePoint o guardar cambios requiere las conexiones correspondientes. Descargar un XLSX ya publicado no requiere conexiones personales. El repo comercial es público: sus archivos también se pueden descargar directamente desde GitHub.</p></div>
+      </article>
+      <article id="help-integration" class="panel">
+        <h3>Base para integrarlo con un sistema de gestión</h3>
+        <p>Hoy el tablero ya separa el modelo de cálculo, los datos comerciales, la lectura del DTE y la generación del XLSX. La integración puede empezar por consumir los archivos mensuales y conciliar sus totales; después se pueden conectar contratos y suministros con el sistema de gestión.</p>
+        <div class="help-status"><span>Disponible hoy</span><p>Contratos y generación editables, procesamiento de DTE, suministros reales por edición, simulación compartida y exportación mensual con comparación I/II.</p></div>
+        <div class="help-status help-next"><span>Por desarrollar</span><p>Autenticación propia para el sistema de gestión, permisos por operación, catálogo independiente de clientes, sincronización automática y confirmación de que la facturación fue importada o emitida.</p></div>
+        <details><summary>Interfaz técnica existente</summary>
+          <p>Estas rutas pertenecen al servidor actual de Sites. No son todavía una API externa lista para conectar un ERP con una clave: dependen de la sesión del sitio y, según la operación, de conectores autorizados.</p>
+          <div class="help-table"><table><thead><tr><th>Método / ruta</th><th>Función</th><th>Efecto</th></tr></thead><tbody>
+            <tr><td><code>GET /api/state</code></td><td>Leer contratos, generación y revisión.</td><td>Consulta.</td></tr>
+            <tr><td><code>POST /api/contracts</code><br><code>PUT /api/contracts/:id</code><br><code>DELETE /api/contracts/:id</code></td><td>Crear, editar o eliminar contratos.</td><td>Escritura; requiere revisión. Eliminar exige <code>confirmDelete: true</code>.</td></tr>
+            <tr><td><code>PUT /api/generation</code></td><td>Guardar generación de un plan y mes.</td><td>Escritura; requiere revisión.</td></tr>
+            <tr><td><code>POST /api/dte/discover</code></td><td>Localizar DTE de un mes.</td><td>Consulta SharePoint; no activa reales.</td></tr>
+            <tr><td><code>POST /api/dte/prepare</code></td><td>Procesar mes y edición; admite <code>force</code>.</td><td>Puede activar reales y publicar un XLSX.</td></tr>
+            <tr><td><code>GET /api/actuals</code></td><td>Leer los datos de las ediciones activas.</td><td>Consulta.</td></tr>
+            <tr><td><code>GET /api/billing/catalog</code><br><code>GET /api/billing?month=AAAA-MM&amp;edition=I</code></td><td>Consultar procesados y obtener su XLSX.</td><td>Lectura de datos guardados; requiere conexión a GitHub.</td></tr>
+            <tr><td><code>GET /api/billing/published</code><br><code>GET /api/billing/saved?month=AAAA-MM&amp;edition=II</code></td><td>Catálogo público y XLSX ya publicado.</td><td>Dentro del sitio requiere sesión; no requiere conectores personales.</td></tr>
+          </tbody></table></div>
+          <p>No hay todavía una ruta HTTP para pedir simulaciones, un webhook por carga de DTE ni una operación para emitir facturas en el sistema de gestión. El cálculo se comparte mediante <code>server/model.mjs</code>.</p>
+        </details>
+        <details><summary>Identificadores y reglas que debe conservar la integración</summary>
+          <ul><li><b>Contrato interno:</b> usar <code>id</code>, no el nombre del cliente. No asumir que todos los identificadores son UUID: hay registros migrados.</li><li><b>Contrato PS:</b> identificador comercial para facturar; es distinto del ID de contrato que aparece en el DTE.</li><li><b>NEMO:</b> identifica el punto o contraparte del suministro. No es una clave única de contrato: puede aparecer en varios productos, generadores o prioridades.</li><li><b>Período y edición:</b> conservar año y mes como <code>AAAA-MM</code>, junto con DTE I o II y su fuente. No mezclar ni sumar MWh y MWhrp.</li><li><b>Precios:</b> guardar moneda, unidad, temporada, excepciones mensuales y comisión por separado.</li><li><b>Conciliación:</b> comparar cantidades por sociedad, NEMO y producto; mantener los tramos de precio cuando un suministro tiene más de uno.</li><li><b>Reintentos:</b> reutilizar el procesamiento del mismo mes y edición; forzar una nueva lectura sólo cuando se requiera revisar la fuente.</li></ul>
+        </details>
+        <details><summary>Orden sugerido de integración</summary>
+          <ol><li><b>Lectura y conciliación.</b> Importar los XLSX publicados a un entorno de prueba y verificar mes, edición, PS, cantidades, precios, moneda y FNEE.</li><li><b>Servicio autenticado.</b> Definir qué sistema mantiene clientes y contratos. Agregar autenticación y permisos propios para intercambiar datos sin depender de una sesión de navegador.</li><li><b>Persistencia y cierre.</b> Si se migra a una base de datos, conservar revisiones, fuentes, ediciones y trazabilidad. Agregar aprobación, estado de importación y número de factura para evitar emitir dos veces.</li></ol>
+          <p>La documentación técnica completa acompaña el código en <code>docs/INTEGRACION.md</code>. El XLSX actual es una entrada para el bot; generarlo no significa que la factura ya esté emitida.</p>
+        </details>
+      </article>
+    </div>
+  </div>
+</section>

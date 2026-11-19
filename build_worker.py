@@ -3,6 +3,7 @@ from pathlib import Path
 import json,subprocess
 R=Path(__file__).parent
 assets={}
+assets['/docs/INTEGRACION.md']={'content':(R/'docs/INTEGRACION.md').read_text(),'type':'text/markdown; charset=utf-8'}
 for route,path,mime in [('/index.html','dist/index.html','text/html; charset=utf-8'),('/contracts.js','contracts.js','text/javascript; charset=utf-8'),('/contracts.css','contracts.css','text/css; charset=utf-8'),('/model.mjs','server/model.mjs','text/javascript; charset=utf-8'),('/actuals.mjs','server/actuals.mjs','text/javascript; charset=utf-8')]:
  assets[route]={'content':(R/path).read_text(),'type':mime}
 runtime=R/'.sites-runtime';runtime.mkdir(exist_ok=True)
