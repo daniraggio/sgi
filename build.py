@@ -1,4 +1,4 @@
-import json,pathlib
+import json,pathlib,subprocess
 raw=json.load(open(str(pathlib.Path(__file__).parent/'source_data/historical.json')))
 def cell(s,r,c):
  v=raw[s][r-1][c-1] if c<=len(raw[s][r-1]) else None
@@ -91,14 +91,18 @@ for g in data['oeccCapacity']:
 for supplier in ['GSSR','LEDLAR']:
  rows=[o for o in actual['oescEnergy'] if o['supplier']==supplier]
  data['purchases'].append(dict(month=10,supplier=supplier,q=sum(o['q'] for o in rows),price=rows[0]['buyprice'],gross=sum(o['cost'] for o in rows),net=sum(o['cost'] for o in rows),source=actual['source']))
+aet_plan=json.loads(subprocess.check_output(['node',str(pathlib.Path(__file__).parent/'scripts/aet-projection.mjs')],text=True))
+data['aet']=aet_plan['rows'];data['aetContracts']=aet_plan['contracts'];data['aetActualMonths']=[]
 (pathlib.Path(__file__).parent/'data.json').write_text(json.dumps(data,ensure_ascii=False))
 template=(pathlib.Path(__file__).parent/'template.html').read_text()
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'forecast.html').read_text()+'<section id="overview"')
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'portfolio.html').read_text()+'<section id="overview"')
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'oecc.html').read_text()+'<section id="overview"')
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'oecc_extra.html').read_text()+'<section id="overview"')
+template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'aet.html').read_text()+'<section id="overview"')
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'contracts.html').read_text()+'<section id="overview"')
 template=template.replace('<link rel="stylesheet" href="/contracts.css">','<style>'+(pathlib.Path(__file__).parent/'contracts.css').read_text()+'</style>')
 template=template.replace('</body>', '<script>'+(pathlib.Path(__file__).parent/'forecast.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'portfolio.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_view.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_extra.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'dte_audit.js').read_text()+'</script><script type="module" src="/contracts.js"></script></body>')
+template=template.replace('<script type="module" src="/contracts.js">','<script>'+(pathlib.Path(__file__).parent/'aet.js').read_text()+'</script><script type="module" src="/contracts.js">')
 (pathlib.Path(__file__).parent/'dist/index.html').write_text(template.replace('__DATA__',json.dumps(data,ensure_ascii=False)))
 print(json.dumps({'months':len(months),'operations':len(ops),'margin_usd':sum(x['margin'] for x in months),'mwh':sum(x['q'] for x in months)}))
