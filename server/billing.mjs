@@ -3,7 +3,7 @@ export function billingCatalog(data){return (data.periods||[]).map(({month,editi
 export function billingRows(state,data,month,edition){
  if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(month)||!['I','II'].includes(edition))throw Error('Elegí mes y versión de DTE válidos.');
  const period=data.periods?.find(p=>p.month===month&&p.edition===edition);if(!period)throw {status:404,error:'No está incorporado el DTE '+edition+' de '+month+'. No se utilizarán proyecciones ni otra versión.'};
- const result={OESC:[],OECC:[]};
+ const result={OESC:[],OECC:[],AET:[]};
  for(const source of period.rows){
   const r={...source},kind=r.unit==='MWh'?'energy':'power';
   const candidates=state.contracts.filter(c=>c.society===r.society&&c.kind===kind&&c.start<=month&&c.end>=month&&c.nemo.split(' / ').includes(r.nemo)&&(!r.supplier||c.supplier===r.supplier));
@@ -27,14 +27,14 @@ function zip(files){const local=[],central=[];let offset=0;for(const [path,text]
 function sheetXml(rows){return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+rows.map((row,i)=>'<row r="'+(i+1)+'">'+row.map((value,j)=>{if(value==null||value==='')return '';const ref=String.fromCharCode(65+j)+(i+1);return typeof value==='number'?'<c r="'+ref+'"><v>'+value+'</v></c>':'<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+xml(value)+'</t></is></c>';}).join('')+'</row>').join('')+'</sheetData></worksheet>';}
 export function billingComparison(state,data,month){
  const first=billingRows(state,data,month,'I'),second=billingRows(state,data,month,'II'),items=new Map();
- for(const [version,rows]of [[0,first],[1,second]])for(const society of ['OESC','OECC'])for(const row of rows[society]){
+ for(const [version,rows]of [[0,first],[1,second]])for(const society of ['OESC','OECC','AET'])for(const row of (rows[society]||[])){
   const key=[society,row.nemo,row.unit].join('|'),item=items.get(key)||{society,client:row.client,nemo:row.nemo,unit:row.unit,qI:0,qII:0,presentI:false,presentII:false};
   item[version?'qII':'qI']+=row.q;item[version?'presentII':'presentI']=true;items.set(key,item);
  }
  return [...items.values()].sort((a,b)=>a.society.localeCompare(b.society)||a.nemo.localeCompare(b.nemo)||a.unit.localeCompare(b.unit)).map(r=>({...r,qI:Math.round(r.qI*1e6)/1e6,qII:Math.round(r.qII*1e6)/1e6,difference:Math.round((r.qII-r.qI)*1e6)/1e6,status:!r.presentI?'Solo en DTE II':!r.presentII?'Solo en DTE I':Math.abs(r.qII-r.qI)<1e-9?'Sin cambio':'Modificado'}));
 }
-export function billingXlsx(rows,month,comparison=null){
- const sheets=['OESC','OECC'].map(soc=>({name:soc,rows:[['Unidad de negocio',soc==='OESC'?'BIDEI':'BIHCC'],['Año suministro',Number(month.slice(0,4))],['Mes suministro',Number(month.slice(5))],['Tipo de facturación','Provisorio'],[],['Contrato PS','Cliente','NEMO','Línea de facturación','Cantidad','Unidad','Precio (USD/unidad)','Observación'],...rows[soc].map(r=>[r.ps,r.client,r.nemo,r.unit==='MWh'?'Energías renovables':'Potencia',r.q,r.unit,r.price,r.notes])]}));
+export function billingXlsx(rows,month,comparison=null,businessUnits={}){
+ const sheets=['OESC','OECC',...(rows.AET?.length?['AET']:[])].map(soc=>({name:soc,rows:[['Unidad de negocio',soc==='OESC'?'BIDEI':soc==='OECC'?'BIHCC':businessUnits.AET||'PENDIENTE'],['Año suministro',Number(month.slice(0,4))],['Mes suministro',Number(month.slice(5))],['Tipo de facturación','Provisorio'],[],['Contrato PS','Cliente','NEMO','Línea de facturación','Cantidad','Unidad','Precio (USD/unidad)','Observación'],...rows[soc].map(r=>[r.ps,r.client,r.nemo,r.unit==='MWh'?'Energías renovables':'Potencia',r.q,r.unit,r.price,[r.notes,soc==='AET'&&!businessUnits.AET?'Completar unidad de negocio AET.':''].filter(Boolean).join(' ')])]}));
  if(comparison!==null)sheets.push({name:'Comparación DTE I vs II',rows:[['Año suministro',Number(month.slice(0,4))],['Mes suministro',Number(month.slice(5))],['Criterio','Diferencia = cantidad DTE II menos cantidad DTE I. Se suman entregas por sociedad, NEMO y producto; no se mezclan MWh y MWhrp.'],[],['Sociedad','Cliente','NEMO','Producto','Unidad','Cantidad DTE I','Cantidad DTE II','Diferencia II - I','Estado'],...comparison.map(r=>[r.society,r.client,r.nemo,r.unit==='MWh'?'Energía':'Potencia',r.unit,r.qI,r.qII,r.difference,r.status])]});
  const files={'[Content_Types].xml':'<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+'</Types>',
  '_rels/.rels':'<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
