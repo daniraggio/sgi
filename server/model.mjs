@@ -2,7 +2,7 @@ export function validateContract(input){
  const text=(k,max=160)=>{if(typeof input[k]!=='string'||!input[k].trim()||input[k].length>max)throw new Error('Completá '+k);return input[k].trim()};
  const number=k=>{const v=input[k];if(typeof v!=='number'||!Number.isFinite(v)||v<0)throw new Error('Valor inválido: '+k);return v};
  const month=k=>{const v=text(k,7);if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(v))throw new Error('Mes inválido');return v};
- const society=text('society'),kind=text('kind');if(!['OESC','OECC'].includes(society)||!['energy','power'].includes(kind))throw new Error('Sociedad o producto inválido');
+ const society=text('society'),kind=text('kind');if(!['OESC','OECC','AET'].includes(society)||!['energy','power'].includes(kind))throw new Error('Sociedad o producto inválido');
  const psContract=input.psContract==null?'':String(input.psContract).trim();
  if(psContract&&!/^\d{1,30}$/.test(psContract))throw Error('Contrato PS inválido: usá solo números.');
  const priority=input.priority??null;
@@ -50,12 +50,12 @@ export function simulateEnergy(state){
   for(const key of buckets){
    const [society,supplier]=key.split('|'),plan=plans.find(p=>p.society===society&&p.supplier===supplier),rows=contracts.filter(c=>c.society===society&&c.supplier===supplier&&schedules.get(c.id).has(month)),items=rows.map(c=>({id:c.id,priority:c.priority,cap:schedules.get(c.id).get(month).q}));
    let generation=plan?.monthlyGeneration[month]??null,share=plan?.monthlyShares[month]??null,available=generation!=null&&share!=null?generation*share:null;
-   const interco=society==='OESC'&&supplier==='OECC · Alto Valle';
-   if(interco){const upstream=groups.find(g=>g.month===month&&g.society==='OECC'&&g.supplier===supplier);generation=null;share=null;available=upstream?.available==null?null:operations.filter(x=>x.month===month&&x.society==='OECC'&&x.supplier===supplier&&x.client==='OESC').reduce((n,x)=>n+(x.q??0),0);}
+   const interco=['OESC','AET'].includes(society)&&supplier==='OECC · Alto Valle';
+   if(interco){const upstream=groups.find(g=>g.month===month&&g.society==='OECC'&&g.supplier===supplier);generation=null;share=null;available=upstream?.available==null?null:operations.filter(x=>x.month===month&&x.society==='OECC'&&x.supplier===supplier&&(society==='AET'?x.nemo==='ACONENEO':x.client==='OESC')).reduce((n,x)=>n+(x.q??0),0);}
    if(!rows.length&&available==null)continue;
    const result=allocatePriority(items,available);
    groups.push({month,society,supplier,generation,share,available,interco,contracted:items.reduce((n,x)=>n+x.cap,0),...result});
-   for(const c of rows){const entry=schedules.get(c.id).get(month),q=result.allocations[c.id];operations.push({contractId:c.id,month,society,supplier,client:c.client,nemo:c.nemo,priority:c.priority,cap:entry.q,q,price:entry.price,revenue:q==null?null:q*entry.price,interco:c.society==='OECC'&&['OESC','Aconcagua Energia Trading'].includes(c.client),intercoTarget:c.client==='OESC'?'OESC':c.client==='Aconcagua Energia Trading'?'Trading':null,source:'Simulación · '+c.source});}
+   for(const c of rows){const entry=schedules.get(c.id).get(month),q=result.allocations[c.id];operations.push({contractId:c.id,month,society,supplier,client:c.client,nemo:c.nemo,priority:c.priority,cap:entry.q,q,price:entry.price,revenue:q==null?null:q*entry.price,interco:c.society==='OECC'&&['OESC','Aconcagua Energia Trading'].includes(c.client),intercoTarget:c.client==='OESC'?'OESC':c.client==='Aconcagua Energia Trading'?'AET':null,source:'Simulación · '+c.source});}
   }
  }
  return {periods,groups,operations};
@@ -82,4 +82,8 @@ export function projectPower(state){
 export function billingTerms(state,contract){
  const nemos=contract.nemo.split(' / '),profile=(state.billingProfiles||[]).find(p=>p.society===contract.society&&nemos.every(n=>p.nemos.includes(n)));
  return {psContract:contract.psContract||profile?.psContract||'',powerPrice:profile?.powerPrice??null,energyInvoicePrice:profile?.energyInvoicePrice??null,energyCommission:profile?.energyCommission??0};
+}
+
+export function projectAet(state,simulation=simulateEnergy(state)){
+ return simulation.operations.filter(o=>o.society==='AET').map(o=>{const upstream=simulation.operations.filter(x=>x.month===o.month&&x.society==='OECC'&&x.nemo==='ACONENEO'),q=upstream.reduce((n,x)=>n+(x.q||0),0),scheduled=state.contracts.find(c=>c.society==='OECC'&&c.nemo==='ACONENEO'),buyprice=q?upstream.reduce((n,x)=>n+(x.revenue||0),0)/q:scheduled?.monthlyPrices?.[o.month]??(5<=+o.month.slice(5)&&+o.month.slice(5)<=9?scheduled?.winterPrice:scheduled?.summerPrice)??null;return {...o,status:'Proyección',kind:'energy',buyprice,cost:o.q==null||buyprice==null?null:o.q*buyprice,margin:o.revenue==null||buyprice==null?null:o.revenue-o.q*buyprice};});
 }
