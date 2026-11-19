@@ -7,3 +7,4 @@ node_modules/
 .sites-checkout/
 .openai/
 *.tar.gz
+.sites-runtime/
