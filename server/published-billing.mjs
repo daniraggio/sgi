@@ -1,0 +1,17 @@
+const REPO='daniraggio/sgi',INDEX='data/billing-exports.json',ROOT='exports/billing/';
+export const publicIndexUrl='https://raw.githubusercontent.com/'+REPO+'/main/'+INDEX;
+export function validateBillingSelection(month,edition){if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(month)||!['I','II'].includes(edition))throw {status:400,error:'Elegí mes y versión de DTE válidos.'};}
+const apiObject=value=>typeof value.content==='string'?JSON.parse(value.content):value;
+export async function publishedCatalog(fetcher=fetch){const r=await fetcher(publicIndexUrl,{cache:'no-store'});if(!r.ok)throw {status:502,error:'No se pudo consultar el catálogo de planillas guardadas.'};const data=await r.json();if(!Array.isArray(data.periods))throw Error('Catálogo de facturación inválido.');return data;}
+export async function savedBilling(month,edition,fetcher=fetch){validateBillingSelection(month,edition);const data=await publishedCatalog(fetcher),entry=data.periods.find(p=>p.month===month&&p.edition===edition),filename='Facturacion_'+month+'_DTE_'+edition+'.xlsx';if(!entry||entry.path!==ROOT+filename)throw {status:404,error:'Todavía no está guardada esta planilla. Primero debe generarla un usuario conectado.'};const r=await fetcher('https://raw.githubusercontent.com/'+REPO+'/main/'+entry.path,{cache:'no-store'});if(!r.ok)throw {status:502,error:'No se pudo descargar la planilla guardada.'};const bytes=new Uint8Array(await r.arrayBuffer());if(bytes[0]!==80||bytes[1]!==75)throw Error('El archivo guardado no es un XLSX válido.');return {bytes,filename};}
+export async function publishBilling({month,edition,bytes,invoke,stateRevision,force=false}){
+ validateBillingSelection(month,edition);const current=JSON.parse((await invoke('fetch_file',{repository_full_name:REPO,path:INDEX,ref:'main'})).content),previous=current.periods.find(p=>p.month===month&&p.edition===edition);if(previous&&!force)return previous;
+ let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+ const blob=await invoke('create_blob',{repository_full_name:REPO,encoding:'base64',content:btoa(binary)}),path=ROOT+'Facturacion_'+month+'_DTE_'+edition+'.xlsx',entry={month,edition,path,blobSha:blob.sha,generatedAt:new Date().toISOString(),stateRevision};
+ if(!blob.sha)throw Error('GitHub no confirmó el archivo XLSX.');
+ const ref=apiObject(await invoke('fetch',{url:'https://api.github.com/repos/'+REPO+'/git/ref/heads/main'})),parent=ref.object.sha,commit=apiObject(await invoke('fetch',{url:'https://api.github.com/repos/'+REPO+'/git/commits/'+parent}));
+ // Read the index again at that branch head before atomically publishing file and catalog.
+ const latest=JSON.parse((await invoke('fetch_file',{repository_full_name:REPO,path:INDEX,ref:parent})).content);latest.periods=latest.periods.filter(p=>p.month!==month||p.edition!==edition).concat(entry).sort((a,b)=>a.month.localeCompare(b.month)||a.edition.localeCompare(b.edition));
+ const tree=await invoke('create_tree',{repository_full_name:REPO,base_tree_sha:commit.tree.sha,tree_elements:[{path,mode:'100644',type:'blob',sha:blob.sha},{path:INDEX,mode:'100644',type:'blob',content:JSON.stringify(latest)+'\n'}]});
+ const created=await invoke('create_commit',{repository_full_name:REPO,parent_sha:parent,tree_sha:tree.sha,message:'Guardar facturación '+month+' DTE '+edition+' para descarga compartida'});await invoke('update_ref',{repository_full_name:REPO,branch_name:'main',sha:created.sha,expected_sha:parent,force:false});return entry;
+}
