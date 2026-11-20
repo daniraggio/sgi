@@ -64,7 +64,7 @@ Cada plan tiene `id`, `society`, `supplier`, `monthlyGeneration` (MWh por mes) y
 `data/dte-billing.json` contiene `periods` y, cuando existe activación por registros separados, `applied`:
 
 - `periods`: mes, edición, fecha de procesamiento, fuente y `cachePath`; hay registros históricos guardados directamente en el índice.
-- `applied`: edición activa por `AAAA-MM`.
+- `applied`: edición activa por `AAAA-MM`. Si un mes antiguo ya procesado todavía no tiene una entrada en este mapa, la lectura de reales recupera su edición más reciente (II antes que I) desde las filas guardadas y su generación. No vuelve a leer SharePoint ni cambia cantidades o precios.
 - `data/dte/<mes>-<edición>-<hash>.json`: procesamiento con `rows`, `billingRows`, `dashboard`, generación, método y fecha. El archivo se guarda antes de activar su referencia en el índice.
 
 `rows` conserva sociedad, NEMO, proveedor, producto/unidad, cantidad, cliente, PS y precio para facturar. `dashboard` contiene las filas y agregados que sustituyen ese mes en el tablero. Una misma combinación puede tener varios tramos de precio: no eliminarlos al normalizar.
@@ -142,7 +142,7 @@ Una hoja OESC y otra OECC; AET sólo con operaciones reales. Sólo el mes selecc
 - Cada suministro de energía agrega `FNEE` con iguales MWh y tarifa mensual en ARS/MWh, tomada de `data/fnee-rates.json`.
 - La unidad de negocio de AET usa su configuración; si falta se señala como pendiente.
 - Un PS faltante puede producir una observación en vez de bloquear el archivo. El sistema receptor debe exigir sus datos obligatorios antes de emitir.
-- II incorpora comparación con I por sociedad/NEMO/producto: diferencia = II − I. No sumar MWh con MWhrp ni agregar FNEE como suministro adicional.
+- II incorpora comparación con I por sociedad/NEMO/producto: diferencia = II − I. Conserva PS y precio por edición; si hay varios tramos los muestra separados, sin promediar. No sumar MWh con MWhrp ni agregar FNEE como suministro adicional.
 
 El XLSX es una entrada para el bot. Su generación no acredita que el bot lo importó, que una factura fue emitida o que fue cobrada.
 

@@ -26,7 +26,7 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
   }
   if(url.pathname==='/api/billing'||url.pathname==='/api/billing/catalog'){
    if(request.method!=='GET')return json(405,{error:'Método no permitido'});
-   if(url.pathname.endsWith('/catalog')){const {data}=await service.index();return json(200,{periods:(data.periods||[]).map(p=>({month:p.month,edition:p.edition,processed:!!p.cachePath||base.actualEditions?.[p.month]===p.edition,processedAt:p.processedAt}))});}
+   if(url.pathname.endsWith('/catalog')){const {data}=await service.index();return json(200,{periods:(data.periods||[]).map(p=>({month:p.month,edition:p.edition,processed:!!(p.cachePath||(p.processedAt&&p.rows&&p.generation)||base.actualEditions?.[p.month]===p.edition),processedAt:p.processedAt}))});}
    const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await stateFromGitHub(binding),{period,first}=await service.billing(month,edition,state),rows=period.billingRows||billingRows(state,{periods:[period]},month,edition);
    const comparison=edition==='II'?billingComparison(state,{periods:[{...first,rows:first.rows},{...period,rows:period.rows}]},month):null;
    const hasEnergy=Object.values(rows).flat().some(r=>r.unit==='MWh'),fundRates=hasEnergy?JSON.parse((await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/fnee-rates.json',ref:'main'})).content):{};

@@ -1,15 +1,21 @@
 import {addMonthlyPower,historicalPowerBuyers,downloadMonthlyPower} from './dte-xlsx.mjs';
 import {fneeRate} from './billing.mjs';
-import {discoverDte,downloadDte,extractDte,completeDte,validatePeriod} from './dte.mjs';
+import {discoverDte,downloadDte,extractDte,completeDte,restoreStoredDte,validatePeriod} from './dte.mjs';
 const cachePath=(month,edition)=>'data/dte/'+month+'-'+edition+'.json';
 const cacheMatch=(p,m,e)=>p.month===m&&p.edition===e;
 export function createDteService({read,write,sharepoint,base,fetcher,extractor=extractDte}){
  async function index(){const f=await read('data/dte-billing.json');return {...f,data:JSON.parse(f.content)};}
  async function period(data,month,edition){const p=data.periods?.find(p=>cacheMatch(p,month,edition));if(!p)throw {status:404,error:'No está incorporado el DTE '+edition+' de '+month+'.'};return p.cachePath?JSON.parse((await read(p.cachePath)).content):p;}
- async function actuals(){const {data}=await index();return {periods:await Promise.all(Object.entries(data.applied||{}).map(async([month,edition])=>(await period(data,month,edition)).dashboard))};}
+ const processedInline=p=>!!(p.processedAt&&p.rows&&p.generation);
+ async function actuals(){
+  const {data}=await index(),selected={...data.applied};
+  // Files generated before snapshot activation also carry verified DTE rows.
+  for(const p of data.periods||[])if(!Object.hasOwn(data.applied||{},p.month)&&(p.cachePath||p.dashboard||processedInline(p))&&(!selected[p.month]||p.edition==='II'))selected[p.month]=p.edition;
+  let state;const periods=[];for(const [month,edition]of Object.entries(selected).sort(([a],[b])=>a.localeCompare(b))){const p=await period(data,month,edition);if(!p.dashboard)state??=JSON.parse((await read('data/state.json')).content);periods.push((p.dashboard?p:restoreStoredDte(p,state,base)).dashboard);}return {periods};
+ }
  async function prepare(month,edition,force=false){
   validatePeriod(month,edition);const first=await index(),entry=first.data.periods?.find(p=>cacheMatch(p,month,edition));
-  if(entry&&!force&&(entry.cachePath||base.actualEditions?.[month]===edition)){const cached=await period(first.data,month,edition);return {cached:true,applied:false,processedAt:cached.processedAt,month,edition};}
+  if(entry&&!force&&(entry.cachePath||processedInline(entry)||base.actualEditions?.[month]===edition)){const cached=await period(first.data,month,edition);return {cached:true,applied:false,processedAt:cached.processedAt,month,edition};}
   const available=await discoverDte(sharepoint,month),source=available.find(p=>p.edition===edition);if(!source)throw {status:404,error:'No se encontró DTE '+edition+' de '+month+' en SharePoint. Se conserva el tablero.'};
   let bytes=await downloadDte(sharepoint,source,fetcher),raw=extractor(bytes,month,edition);bytes=null;
   if(raw.powerRequired){if(!source.complement)throw {status:422,error:'Se encontró el Access DTE '+edition+' de '+month+', pero falta localizar su complemento MATP mensual. Se conserva el tablero.'};raw=addMonthlyPower(raw,await downloadMonthlyPower(sharepoint,source.complement,fetcher),historicalPowerBuyers(base,month));}

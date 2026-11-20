@@ -31,6 +31,17 @@ export function completeDte(raw,state,prior,base){
  const period={...raw,rows:raw.rows.map(r=>{const old=all.find(o=>o.society===r.society&&o.nemo===r.nemo&&o.unit===r.unit&&o.supplier===r.supplier),kind=r.unit==='MWh'?'energy':'power',c=state.contracts.find(c=>c.society===r.society&&c.kind===kind&&c.start<=month&&c.end>=month&&c.nemo.split(' / ').includes(r.nemo)&&c.supplier===r.supplier);return {...r,client:c?.client||old?.client||r.nemo,price:old?.price??null,ps:old?.ps??null,notes:''};})};
  const ambiguous=raw.rows.filter(r=>new Set(all.filter(o=>o.society===r.society&&o.nemo===r.nemo&&o.unit===r.unit&&o.supplier===r.supplier).map(o=>o.price)).size>1);if(ambiguous.length)throw {status:422,error:'El DTE fue encontrado, pero hay más de un precio histórico para '+ambiguous.map(r=>r.nemo).join(', ')+'. Debe definirse el reparto por precio antes de facturar.'};
  const billed=billingRows(state,{periods:[period]},month,raw.edition),rows=[...billed.OESC,...billed.OECC,...billed.AET],missing=rows.filter(r=>!Number.isFinite(r.price));if(missing.length)throw {status:422,error:'Falta completar el precio en Clientes y contratos para: '+missing.map(r=>r.society+' · '+r.nemo+' · '+r.unit).join(', ')};
+ return buildStoredDashboard(period,rows,billed,state,base);
+}
+export function restoreStoredDte(period,state,base){
+ validatePeriod(period.month,period.edition);
+ if(period.dashboard)return period;
+ const rows=period.rows?.map(r=>({...r}));if(!Array.isArray(rows)||!period.generation||!['GSSR','LEDLAR','OECC · Alto Valle'].every(k=>Number.isFinite(period.generation[k])&&period.generation[k]>=0)||rows.some(r=>!['OESC','OECC','AET'].includes(r.society)||!['MWh','MWhrp'].includes(r.unit)||!Number.isFinite(r.q)||r.q<0||!Number.isFinite(r.price)))throw Error('El DTE guardado no contiene todos los datos necesarios para activar los reales.');
+ const billed={OESC:[],OECC:[],AET:[]};for(const r of rows)billed[r.society].push(r);
+ return buildStoredDashboard(period,rows,billed,state,base);
+}
+function buildStoredDashboard(period,rows,billed,state,base){
+ const raw=period,month=period.month;
  const ops=rows.filter(r=>r.society==='OESC'&&r.unit==='MWh').map(r=>({...r,kind:'energy',date:month,month:+month.slice(5),income:r.q*r.price,commission:r.q*billingTerms(state,{society:'OESC',nemo:r.nemo}).energyCommission}));
  const gssr=ops.filter(r=>r.supplier==='GSSR'),spot=Math.max(0,raw.generation.GSSR-gssr.reduce((n,r)=>n+r.q,0)),net=gssr.reduce((n,r)=>n+r.income-r.commission,0)+spot*40.8,avg=raw.generation.GSSR?net/raw.generation.GSSR:0;
  const known=base.ops.find(o=>dateOf(o)===month&&o.supplier==='GSSR')?.buyprice;
@@ -41,7 +52,7 @@ export function completeDte(raw,state,prior,base){
  const aet=rows.filter(r=>r.society==='AET').map(r=>{if(r.unit!=='MWh')throw Error('Falta definir el precio de compra de potencia de AET antes de incorporar ese producto.');const terms=state.contracts.find(c=>c.society==='OECC'&&c.nemo==='ACONENEO'&&c.start<=month&&c.end>=month),buyprice=terms?.monthlyPrices?.[month]??(5<=+month.slice(5)&&+month.slice(5)<=9?terms?.winterPrice:terms?.summerPrice)??null;return {...r,month,kind:r.unit==='MWh'?'energy':'power',buyprice,cost:buyprice==null?null:r.q*buyprice,revenue:r.q*r.price,margin:buyprice==null?null:r.q*(r.price-buyprice)};});
  const source='DTE '+raw.edition+' · '+month+' · '+raw.method;for(const r of [...ops,...power,...oecc,...aet])Object.assign(r,{source,status:'Real'});
  const sum=(rs,k)=>rs.reduce((n,r)=>n+(r[k]||0),0),summary={date:month,month:+month.slice(5),fx:base.months.find(o=>dateOf(o)===month)?.fx??null,q:sum(ops,'q'),buyq:sum(ops,'q')+spot,revenue:sum(ops,'income')+spot*40.8,cost:sum(ops,'cost')+spot*solarBuy,commission:sum(ops,'commission')};summary.margin=summary.revenue-summary.cost-summary.commission;
- return {...period,rows,billingRows:billed,dashboard:{month,edition:raw.edition,oescEnergy:ops,oescPower:power,oecc,aet,oescSummary:summary,generation:raw.generation,oeccCommercial:raw.generation['OECC · Alto Valle']*(state.generation?.find(p=>p.society==='OECC')?.monthlyShares?.[month]??0),spot:{q:spot,price:40.8,income:spot*40.8,cost:spot*solarBuy,buyprice:solarBuy}},processedAt:new Date().toISOString()};
+ return {...period,rows,billingRows:billed,dashboard:{month,edition:raw.edition,oescEnergy:ops,oescPower:power,oecc,aet,oescSummary:summary,generation:raw.generation,oeccCommercial:raw.generation['OECC · Alto Valle']*(state.generation?.find(p=>p.society==='OECC')?.monthlyShares?.[month]??0),spot:{q:spot,price:40.8,income:spot*40.8,cost:spot*solarBuy,buyprice:solarBuy}},processedAt:period.processedAt||new Date().toISOString()};
 }
 export async function discoverDte(invoke,month){
  validatePeriod(month);const year=month.slice(0,4),number=month.slice(5),stem='DTE'+year.slice(2)+number,args={hostname:'aconcaguaenergia.sharepoint.com',site_path:'/sites/aconcaguaenergia',top:200};
