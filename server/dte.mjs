@@ -58,15 +58,15 @@ export async function discoverDte(invoke,month){
  validatePeriod(month);const year=month.slice(0,4),number=month.slice(5),stem='DTE'+year.slice(2)+number,args={hostname:'aconcaguaenergia.sharepoint.com',site_path:'/sites/aconcaguaenergia',top:200};
  const list=async path=>{const r=await invoke('list_folder_items',{...args,folder_path:path});if(r.next_link)throw Error('La carpeta tiene más archivos que el límite de lectura.');return r.value||[];};
  const ys=await list(DTE_ROOT+'/'+year),folder=ys.find(f=>f.folder&&new RegExp('^'+number+'(?:\\s|-|$)').test(f.name));if(!folder)return [];
- const path=DTE_ROOT+'/'+year+'/'+folder.name,children=await list(path),result=[];
- for(const edition of ['I','II']){const sub=children.find(f=>f.folder&&f.name.trim().replace(/\s+/g,' ').toUpperCase()==='DTE '+edition);if(!sub)continue;const editionPath=path+'/'+sub.name,docs=await list(editionPath),names=new RegExp('^'+stem+'(?:[ _-]+'+edition+')?\\.(mdb|zip)$','i');let found=docs.filter(f=>!f.folder&&names.test(f.name));
+ const path=DTE_ROOT+'/'+year+'/'+folder.name,children=await list(path);
+ const result=await Promise.all(['I','II'].map(async edition=>{const sub=children.find(f=>f.folder&&f.name.trim().replace(/\s+/g,' ').toUpperCase()==='DTE '+edition);if(!sub)return null;const editionPath=path+'/'+sub.name,docs=await list(editionPath),names=new RegExp('^'+stem+'(?:[ _-]+'+edition+')?\\.(mdb|zip)$','i');let found=docs.filter(f=>!f.folder&&names.test(f.name));
   for(const nested of docs.filter(f=>f.folder&&new RegExp('^'+stem+'(?:[ _-]+'+edition+')?$','i').test(f.name)))found.push(...(await list(editionPath+'/'+nested.name)).filter(f=>!f.folder&&names.test(f.name)));
   // Prefer Access to an archive copy; never guess between two Access revisions.
-  const mdb=found.filter(f=>/\.mdb$/i.test(f.name));if(mdb.length)found=mdb;if(found.length>1)throw Error('Hay varios archivos DTE '+edition+' de '+month+'. Revisá cuál es el vigente.');const file=found[0];if(!file)continue;
+  const mdb=found.filter(f=>/\.mdb$/i.test(f.name));if(mdb.length)found=mdb;if(found.length>1)throw Error('Hay varios archivos DTE '+edition+' de '+month+'. Revisá cuál es el vigente.');const file=found[0];if(!file)return null;
   let complement=null;for(const folder of docs.filter(f=>f.folder&&/complemento.*r400/i.test(f.name))){const matches=(await list(editionPath+'/'+folder.name)).filter(f=>!f.folder&&new RegExp('^(?:MATP?|Contratos).*'+year+'[-_]'+number+'.*\\.xlsx$','i').test(f.name));if(matches.length>1)throw Error('Hay varios complementos MATP para DTE '+edition+'.');if(matches[0])complement={name:matches[0].name,url:matches[0].web_url};}
-  result.push({month,edition,name:file.name,url:file.web_url,modified:file.last_modified_date_time,size:file.size,hash:file.file?.hashes?.quickXorHash||null,...(complement?{complement}:{})});
- }
- return result;
+  return {month,edition,name:file.name,url:file.web_url,modified:file.last_modified_date_time,size:file.size,hash:file.file?.hashes?.quickXorHash||null,...(complement?{complement}:{})};
+ }));
+ return result.filter(Boolean);
 }
 export async function openDteDownload(invoke,source,fetcher=fetch){
  const f=await invoke('fetch',{url:source.url,download_raw_file:true}),info=f.file_uri||f.structuredContent?.file_uri,url=info?.download_url;

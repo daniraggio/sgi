@@ -13,14 +13,15 @@ export function createDteService({read,write,sharepoint,base,fetcher,extractor=e
   for(const p of data.periods||[])if(!Object.hasOwn(data.applied||{},p.month)&&(p.cachePath||p.dashboard||processedInline(p))&&(!selected[p.month]||p.edition==='II'))selected[p.month]=p.edition;
   let state;const periods=[];for(const [month,edition]of Object.entries(selected).sort(([a],[b])=>a.localeCompare(b))){const p=await period(data,month,edition);if(!p.dashboard)state??=JSON.parse((await read('data/state.json')).content);periods.push((p.dashboard?p:restoreStoredDte(p,state,base)).dashboard);}return {periods};
  }
- async function prepare(month,edition,force=false){
+ async function prepare(month,edition,force=false,step=null){
   validatePeriod(month,edition);const first=await index(),entry=first.data.periods?.find(p=>cacheMatch(p,month,edition));
+  if(step&&step.phase!=='single')throw Error('Etapa de procesamiento inválida.');
   if(entry&&!force&&(entry.cachePath||processedInline(entry)||base.actualEditions?.[month]===edition)){const cached=await period(first.data,month,edition);return {cached:true,applied:false,processedAt:cached.processedAt,month,edition};}
-  const available=await discoverDte(sharepoint,month),source=available.find(p=>p.edition===edition);if(!source)throw {status:404,error:'No se encontró DTE '+edition+' de '+month+' en SharePoint. Se conserva el tablero.'};
-  let bytes=await downloadDte(sharepoint,source,fetcher),raw=extractor(bytes,month,edition);bytes=null;
+  if(step&&edition==='II'&&!first.data.periods?.some(p=>cacheMatch(p,month,'I')&&(p.cachePath||processedInline(p))))return {prerequisite:'I',month,edition};
+  const available=await discoverDte(sharepoint,month),source=available.find(p=>p.edition===edition);if(!source)throw {status:404,error:'No se encontró DTE '+edition+' de '+month+' en SharePoint. Se conserva el tablero.'};let bytes=await downloadDte(sharepoint,source,fetcher),raw=extractor(bytes,month,edition);bytes=null;
   if(raw.powerRequired){if(!source.complement)throw {status:422,error:'Se encontró el Access DTE '+edition+' de '+month+', pero falta localizar su complemento MATP mensual. Se conserva el tablero.'};raw=addMonthlyPower(raw,await downloadMonthlyPower(sharepoint,source.complement,fetcher),historicalPowerBuyers(base,month));}
   const state=JSON.parse((await read('data/state.json')).content),built=completeDte(raw,state,first.data,base);built.source=source;if(built.rows.some(r=>r.unit==='MWh'))fneeRate(JSON.parse((await read('data/fnee-rates.json')).content),month);
-  if(edition==='II'&&!first.data.periods?.some(p=>cacheMatch(p,month,'I')))await prepare(month,'I',false);
+  if(!step&&edition==='II'&&!first.data.periods?.some(p=>cacheMatch(p,month,'I')))await prepare(month,'I',false);
   // Re-read before persisting so a concurrent request cannot silently replace another edition.
   const current=await index(),existing=current.data.periods?.find(p=>cacheMatch(p,month,edition));if(existing?.cachePath&&!force)return {cached:true,applied:false,month,edition};
   // Versioned immutable file first; only the following index write activates its data.
