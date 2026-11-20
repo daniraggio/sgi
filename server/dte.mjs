@@ -72,7 +72,8 @@ export async function openDteDownload(invoke,source,fetcher=fetch){
  const f=await invoke('fetch',{url:source.url,download_raw_file:true}),info=f.file_uri||f.structuredContent?.file_uri,url=info?.download_url;
  if(!url)throw Error('SharePoint no devolvió el archivo Access para su lectura.');
  const u=new URL(url);if(u.protocol!=='https:'||!/(^|\.)oaiusercontent\.com$|(^|\.)blob\.core\.windows\.net$/.test(u.hostname))throw Error('Referencia de descarga no admitida.');
- const r=await fetcher(url,{redirect:'error'});if(!r.ok)throw Error('No se pudo descargar el DTE desde SharePoint.');
+ // Workers supports manual/follow only. Never follow a redirect outside the validated download host.
+ const r=await fetcher(url,{redirect:'manual'});if(r.status>=300&&r.status<400)throw Error('La descarga del DTE devolvió una redirección. Volvé a consultar SharePoint para renovar el enlace.');if(!r.ok)throw Error('No se pudo descargar el DTE desde SharePoint.');
  return r;
 }
 export async function downloadDte(invoke,source,fetcher=fetch){
