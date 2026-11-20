@@ -3,7 +3,7 @@ import {fneeRate} from './billing.mjs';
 import {discoverDte,downloadDte,extractDte,completeDte,restoreStoredDte,validatePeriod} from './dte.mjs';
 const cachePath=(month,edition)=>'data/dte/'+month+'-'+edition+'.json';
 const cacheMatch=(p,m,e)=>p.month===m&&p.edition===e;
-export function createDteService({read,write,sharepoint,base,fetcher,extractor=extractDte}){
+export function createDteService({read,write,sharepoint,base,fetcher,extractor=extractDte,history=async()=>base.billingHistory||[]}){
  async function index(){const f=await read('data/dte-billing.json');return {...f,data:JSON.parse(f.content)};}
  async function period(data,month,edition){const p=data.periods?.find(p=>cacheMatch(p,month,edition));if(!p)throw {status:404,error:'No está incorporado el DTE '+edition+' de '+month+'.'};return p.cachePath?JSON.parse((await read(p.cachePath)).content):p;}
  const processedInline=p=>!!(p.processedAt&&p.rows&&p.generation);
@@ -20,7 +20,7 @@ export function createDteService({read,write,sharepoint,base,fetcher,extractor=e
   if(step&&edition==='II'&&!first.data.periods?.some(p=>cacheMatch(p,month,'I')&&(p.cachePath||processedInline(p))))return {prerequisite:'I',month,edition};
   const available=await discoverDte(sharepoint,month),source=available.find(p=>p.edition===edition);if(!source)throw {status:404,error:'No se encontró DTE '+edition+' de '+month+' en SharePoint. Se conserva el tablero.'};let bytes=await downloadDte(sharepoint,source,fetcher),raw=extractor(bytes,month,edition);bytes=null;
   if(raw.powerRequired){if(!source.complement)throw {status:422,error:'Se encontró el Access DTE '+edition+' de '+month+', pero falta localizar su complemento MATP mensual. Se conserva el tablero.'};raw=addMonthlyPower(raw,await downloadMonthlyPower(sharepoint,source.complement,fetcher),historicalPowerBuyers(base,month));}
-  const state=JSON.parse((await read('data/state.json')).content),built=completeDte(raw,state,first.data,base);built.source=source;if(built.rows.some(r=>r.unit==='MWh'))fneeRate(JSON.parse((await read('data/fnee-rates.json')).content),month);
+  const [stateFile,terms]=await Promise.all([read('data/state.json'),history()]);if(!Array.isArray(terms)||terms.some(r=>!/^20\d{2}-(0[1-9]|1[0-2])$/.test(r.month)||!['MWh','MWhrp'].includes(r.unit)||!Number.isFinite(r.price)||r.price<0||typeof r.nemo!=='string'))throw Error('El histórico de precios tiene datos inválidos. Se conserva el tablero.');const state=JSON.parse(stateFile.content),built=completeDte(raw,state,first.data,{...base,billingHistory:terms});built.source=source;if(built.rows.some(r=>r.unit==='MWh'))fneeRate(JSON.parse((await read('data/fnee-rates.json')).content),month);
   if(!step&&edition==='II'&&!first.data.periods?.some(p=>cacheMatch(p,month,'I')))await prepare(month,'I',false);
   // Re-read before persisting so a concurrent request cannot silently replace another edition.
   const current=await index(),existing=current.data.periods?.find(p=>cacheMatch(p,month,edition));if(existing?.cachePath&&!force)return {cached:true,applied:false,month,edition};
