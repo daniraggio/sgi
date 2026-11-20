@@ -1,4 +1,4 @@
-import {publishedCatalog,savedBilling,publishBilling} from '../server/published-billing.mjs';
+import {publishedCatalog,savedBilling,savedComparison,publishBilling} from '../server/published-billing.mjs';
 import {createDteService} from '../server/dte-cache.mjs';
 import {SHAREPOINT} from '../server/dte.mjs';
 import {billingCatalog,billingRows,billingXlsx,billingComparison} from '../server/billing.mjs';
@@ -12,6 +12,7 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
   if(!request.headers.get('oai-authenticated-user-id'))return json(401,{error:'Iniciá sesión para leer y guardar contratos.',chatGPTSignInPath:'/signin-with-chatgpt?return_to=%2F'});
   if(url.pathname==='/api/billing/published'&&request.method==='GET')return json(200,await publishedCatalog(options.publishedFetcher||fetch));
   if(url.pathname==='/api/billing/saved'&&request.method==='GET'){const {bytes,filename}=await savedBilling(url.searchParams.get('month')||'',url.searchParams.get('edition')||'',options.publishedFetcher||fetch);return new Response(bytes,{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+filename+'"','Cache-Control':'private, no-store'}});}
+  if(url.pathname==='/api/billing/comparison'&&request.method==='GET')return json(200,await savedComparison(url.searchParams.get('month')||'',options.publishedFetcher||fetch));
   const binding=ctx.props?.CONNECTORS;
   const service=createDteService({base,fetcher:options.fetcher,read:path=>invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path,ref:'main'}),write:(path,content,sha)=>invoke(binding,sha?'update_file':'create_file',{repository_full_name:REPOSITORY,branch:'main',path,content,message:'SGI: incorporar DTE y valores reales',...(sha?{sha}:{})}),sharepoint:(action,args)=>invoke(binding,action,args,SHAREPOINT)});
   if(url.pathname==='/api/actuals'&&request.method==='GET')return json(200,await service.actuals());
@@ -22,7 +23,7 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
    const text=await request.text();if(text.length>10000)return json(413,{error:'Solicitud demasiado grande'});const input=JSON.parse(text);
    if(url.pathname.endsWith('/discover'))return json(200,{periods:await service.discover(input.month)});
    if(input.force!==undefined&&typeof input.force!=='boolean')return json(400,{error:'Forzar actualización debe ser verdadero o falso.'});
-   const prepared=await service.prepare(input.month,input.edition,input.force===true);try{const {state}=await stateFromGitHub(binding),{period,first}=await service.billing(input.month,input.edition,state),rows=period.billingRows||billingRows(state,{periods:[period]},input.month,input.edition),comparison=input.edition==='II'?billingComparison(state,{periods:[first,period]},input.month):null,funds=JSON.parse((await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/fnee-rates.json',ref:'main'})).content),bytes=billingXlsx(rows,input.month,comparison,{AET:state.societies?.AET?.businessUnit},funds);prepared.published=await publishBilling({month:input.month,edition:input.edition,bytes,stateRevision:state.revision,force:input.force===true,invoke:(action,args)=>invoke(binding,action,args)});}catch(e){prepared.publicationError=e.error||e.message||'No se pudo guardar el XLSX para descarga compartida.';}return json(200,prepared);
+   const prepared=await service.prepare(input.month,input.edition,input.force===true);try{const {state}=await stateFromGitHub(binding),{period,first}=await service.billing(input.month,input.edition,state),rows=period.billingRows||billingRows(state,{periods:[period]},input.month,input.edition),comparison=input.edition==='II'?billingComparison(state,{periods:[first,period]},input.month):null,funds=JSON.parse((await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/fnee-rates.json',ref:'main'})).content),bytes=billingXlsx(rows,input.month,comparison,{AET:state.societies?.AET?.businessUnit},funds);prepared.published=await publishBilling({month:input.month,edition:input.edition,bytes,comparison,stateRevision:state.revision,force:input.force===true,invoke:(action,args)=>invoke(binding,action,args)});}catch(e){prepared.publicationError=e.error||e.message||'No se pudo guardar el XLSX para descarga compartida.';}return json(200,prepared);
   }
   if(url.pathname==='/api/billing'||url.pathname==='/api/billing/catalog'){
    if(request.method!=='GET')return json(405,{error:'Método no permitido'});

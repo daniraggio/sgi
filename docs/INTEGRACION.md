@@ -162,6 +162,7 @@ Son rutas internas de la aplicación publicada. No hay todavía una API externa 
 | GET `/api/actuals` | — | `{periods: [...]}` con los datos de las ediciones activas para el tablero. |
 | GET `/api/billing/catalog` | — | Períodos/ediciones incorporados y estado de procesamiento. |
 | GET `/api/billing?month=AAAA-MM&edition=I` | Query | XLSX de los datos procesados; II agrega comparación. |
+| GET `/api/billing/comparison?month=AAAA-MM` | Query | Comparación guardada I/II del mes, sólo cambios relevantes para el popup; no requiere conectores personales y no escribe reales. |
 | GET `/api/billing/published` | — | Catálogo de XLSX publicados. |
 | GET `/api/billing/saved?month=AAAA-MM&edition=II` | Query | XLSX publicado, sin invocar conectores personales. |
 
@@ -193,7 +194,7 @@ No existe aún endpoint HTTP de simulación, entidad maestra de clientes, webhoo
 | `data/dte/` | Procesamientos separados por versión. |
 | `data/fnee-rates.json` | FNEE por mes, en ARS/MWh. |
 | `data/billing-exports.json` | Catálogo de archivos compartidos. |
-| `exports/billing/` | XLSX publicados. |
+| `exports/billing/` | XLSX publicados y `Comparacion_<mes>_DTE_I_vs_II.json` con las referencias y cantidades de ambas ediciones. |
 
 El repo comercial es público: sus archivos tienen acceso directo por GitHub. El permiso de entrada al sitio no controla ese acceso directo. La API de descarga dentro del sitio sí exige sesión, aunque no necesite conexiones personales.
 
@@ -209,3 +210,8 @@ Hay revisión y registro básico de operaciones, pero no roles propios de la apl
 6. **Automatización:** agregar después un disparador o tarea programada para DTE, con avisos de fallo. Hoy sólo hay consulta/preparación a pedido.
 
 Criterio de aceptación: mismos suministros, precios, comisiones, FNEE y márgenes que el modelo vigente; misma comparación I/II; repetir una importación no duplica operaciones; una edición anterior no reemplaza una posterior; los faltantes quedan visibles, sin fabricar cantidades o precios.
+
+
+## Consulta de diferencias en pantalla
+
+La publicación de DTE II guarda XLSX, JSON de comparación y catálogo en un mismo commit. El catálogo incluye `comparisonPath`, `comparisonChanges` y `comparisonTotal`. El botón de diferencias aparece en Facturación al seleccionar II y un mes con cambios relevantes publicados. El popup usa los datos guardados, exige sesión del sitio y no consulta SharePoint ni modifica el tablero. Muestra PS, precio y cantidad de cada edición, diferencia II − I y motivo del cambio. La planilla conserva todas las filas: el filtro de pantalla omite energía con diferencia absoluta menor a 1 MWh salvo cambios de PS o precio; mantiene diferencias de potencia en MWhrp y usa decimales cuando son necesarios para no mostrarlas como cero. Los meses sin cambios relevantes muestran una leyenda en lugar del botón.
