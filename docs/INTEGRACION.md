@@ -80,7 +80,7 @@ La base inicial del sitio (`data.json`, construida desde `source_data/`) contien
 3. Dentro de cada prioridad, entrega = tope × mínimo(1, disponible para el grupo / suma de topes del grupo). Un grupo de tope cero recibe cero.
 4. El sobrante pasa a la siguiente prioridad. No se supera el tope individual.
 5. Sin generación conocida, la entrega queda pendiente; no convertir ese pendiente en cero.
-6. Las compras de OESC/AET desde OECC están limitadas por la entrega asignada aguas arriba. Contratos y Cartera usan el mismo resultado de simulación.
+6. Las compras de OESC/AET desde OECC están limitadas por la entrega asignada aguas arriba. Los suministros mensuales se consultan en Contratos, junto a sus topes. La navegación no tiene una sección Cartera separada. La guía Cómo funciona se abre desde el encabezado, junto a Descargar HTML.
 
 Las sociedades muestran sus operaciones e intercompañía. El tablero no elimina automáticamente operaciones internas para consolidar el grupo.
 
