@@ -1,0 +1,37 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {allocateOpenEnergy,allocateHourlyPower,closedContractAdjustment} from '../alto-valle/contracts-model.mjs';
+import {approvedContractRows,loadAltoContracts} from '../server/alto-contract-data.mjs';
+import {createHandler} from '../worker/handler.mjs';
+const close=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-6,`${actual} != ${expected}`);
+test('energía: tope mensual completo, 20% y reparto proporcional entre todas las prioridades',()=>{
+ const c=[{capMWh:100,priority:1},{capMWh:300,priority:2}];const a=allocateOpenEnergy(c,1000,'2027-03');assert.deepEqual(a.rows.map(r=>r.q),[50,150]);assert.equal(a.remainingMWh,800);assert.deepEqual(allocateOpenEnergy(c,10000,'2026-11').rows.map(r=>r.q),[100,300]);assert.equal(allocateOpenEnergy(c,0,'2026-11').assignedMWh,0);assert.throws(()=>allocateOpenEnergy(c,1000,'2027-04'));assert.throws(()=>allocateOpenEnergy([{capMWh:-1}],10,'2026-11'));
+});
+test('potencia horaria: excedente de otra hora no respalda una indisponibilidad y solo cuentan HRP',()=>{
+ const a=allocateHourlyPower([{capMW:2},{capMW:8}],[{hrp:true,availableMW:0},{hrp:true,availableMW:100},{hrp:false,availableMW:100}]);assert.equal(a.coveredMWhrp,10);assert.equal(a.unbackedMWhrp,10);assert.deepEqual(a.rows.map(r=>r.q),[2,8]);
+});
+const base={month:'2026-09',generationMWh:1000,powerMWhrp:2000,energyUSD:50000,powerUSD:21600,otherUSD:500,costsUSD:40000};
+test('mes cerrado: DTE exacto, sustitución proporcional, sin doble ingreso y costos idénticos',()=>{
+ const a=closedContractAdjustment({...base,rows:[{unit:'MWh',q:100,price:60},{unit:'MWhrp',q:500,price:13.4}]});assert.equal(a.energyRemovedUSD,5000);assert.equal(a.powerRemovedUSD,5400);assert.equal(a.energySpotUSD+a.energyRemovedUSD,50000);assert.equal(a.powerSpotUSD+a.powerRemovedUSD,21600);assert.equal(a.salesUSD,12700);assert.equal(a.deltaUSD,2300);assert.equal(a.netUSD-a.baseNetUSD,2300);assert.equal(a.costsUSD,40000);assert.throws(()=>closedContractAdjustment({...base,rows:[{unit:'MWh',q:1001,price:60}]}));
+});
+test('septiembre y octubre: reproducción numérica con cantidades DTE y base operativa revisada',()=>{
+ const sep=closedContractAdjustment({...base,generationMWh:23623.402,powerMWhrp:24292.88,energyUSD:1549907.395072905,powerUSD:262363.104,rows:[{unit:'MWh',q:1865.523,price:78},{unit:'MWhrp',q:10644.661,price:141481.0512/10644.661}]});close(sep.energySalesUSD,145510.794);close(sep.powerRemovedUSD,114962.3388);close(sep.deltaUSD,145510.794+141481.0512-114962.3388-1549907.395072905*1865.523/23623.402);
+ const oct=closedContractAdjustment({...base,month:'2026-10',generationMWh:0,powerMWhrp:23598.4,energyUSD:0,powerUSD:254862.72,rows:[{unit:'MWhrp',q:10129.918,price:134503.99175/10129.918}]});assert.equal(oct.energyFraction,0);assert.equal(oct.energySpotUSD,0);close(oct.powerRemovedUSD,109403.1144);close(oct.deltaUSD,25100.87735);assert.equal(oct.costsUSD,base.costsUSD);
+});
+const state={revision:2,contracts:[{society:'OECC',nemo:'ENERG',kind:'energy',start:'2026-10',end:'2027-10',summerPrice:44,winterPrice:73}],billingProfiles:[]};
+const period={month:'2026-09',edition:'II',rows:[{society:'OECC',nemo:'ENERG',unit:'MWh',q:50,price:78,VALORIZACION:1},{society:'OESC',nemo:'ENERG',unit:'MWh',q:200,price:90}],billingRows:{OECC:[{nemo:'ENERG',unit:'MWh',q:50,price:78}]}};
+test('precios del histórico comercial para septiembre, sin precios CAMMESA ni reventas OESC',()=>{
+ const a=approvedContractRows(period,state);assert.equal(a.length,1);assert.equal(a[0].price,78);assert.equal(a[0].q,50);assert.equal(approvedContractRows({...period,month:'2026-10'},state)[0].price,44);assert.throws(()=>approvedContractRows({...period,billingRows:{OECC:[{nemo:'ENERG',unit:'MWh',q:49,price:78}]}},state));assert.throws(()=>approvedContractRows({...period,billingRows:{OECC:[{nemo:'ENERG',unit:'MWh',q:50}]}},state));
+});
+test('último DTE íntegro del mes, sin filtros de diferencias, sin escrituras ni consultas SharePoint',async()=>{
+ const calls=[],fetcher=async url=>{calls.push(url);return Response.json(url.endsWith('state.json')?state:{periods:[{...period,edition:'I',rows:[{...period.rows[0],q:49.8}],billingRows:{OECC:[{...period.billingRows.OECC[0],q:49.8}]}},period]});};const a=await loadAltoContracts('2026-09',fetcher);assert.equal(a.edition,'II');assert.equal(a.rows[0].q,50);assert.equal(calls.length,2);assert.ok(calls.every(u=>u.startsWith('https://raw.githubusercontent.com/daniraggio/sgi/main/')));await assert.rejects(loadAltoContracts('2026-11',fetcher));assert.equal(calls.length,2);
+});
+test('API exige identidad, no requiere conexiones para datos ya guardados y limita la validación',async()=>{
+ const handler=createHandler({}, {},{altoFetcher:async url=>Response.json(url.endsWith('state.json')?state:{periods:[period]})});const url='https://sgi.test/api/alto-valle/contracts?month=2026-09';assert.equal((await handler.fetch(new Request(url),{},{})).status,401);const r=await handler.fetch(new Request(url,{headers:{'oai-authenticated-user-id':'test'}}),{},{});assert.equal(r.status,200);assert.equal((await r.json()).rows[0].price,78);assert.equal((await handler.fetch(new Request(url.replace('09','11'),{headers:{'oai-authenticated-user-id':'test'}}),{},{})).status,400);
+});
+
+test('Resumen ARS y USD conserva cada costo y muestra el mismo efecto convertido, sin extender otros meses',async()=>{
+ const fs=await import('node:fs'),vm=await import('node:vm');const context=vm.createContext({window:{},MONTH:'2026_09',getTC:()=>1500,getComputedTotals:()=>({eMWh:{TOTAL:1000}}),calcRemEnergia:()=>({TOTAL:75000000}),calcRemPotencia:()=>({TOTAL:21600}),calcPotMes:()=>2,calcRPF:()=>750000,calcCostoGas:()=>({TOTAL:30000000,TOTAL_GA:15000000}),calcPotHRP:()=>2000,CFG:{CONF:1000,CANON_AGUA:840,TRANSPORTE:1000,ENRE:500},mkResumenTable:rows=>rows,buildResumen:()=>{},buildResumenUSD:()=>{},fmtFull:v=>String(v),fmtN:v=>String(v),MODEL:{closedContractAdjustment}});
+ vm.runInContext(fs.readFileSync(new URL('../alto-valle/contracts.js',import.meta.url),'utf8'),context);vm.runInContext(`avContractModel=MODEL;avSummaryPeriod={month:'2026-09',edition:'II',rows:[{unit:'MWh',q:100,price:60},{unit:'MWhrp',q:500,price:13.4}]};`,context);
+ for(const currency of ['USD ','$ ']){context.currency=currency;const result=vm.runInContext(`mkResumenTable([{label:'Rem. Energía',val:currency+'50000'},{label:'Rem. Potencia',val:currency+'21600'},{label:'Costo Gas (GN Ac.)',val:currency+'20000'},{label:'CAMMESA',val:currency+'29'},{label:'Imp. Déb/Cred',val:currency+'442'},{label:'Total Costos',val:currency+'30500'},{label:'Rem. − Costos',val:currency+'0'}])`,context),find=label=>result.find(r=>r.label===label);assert.equal(find('Total Costos').val,(currency==='$ '?'ARS ':currency)+'30500');assert.equal(find('Costo Gas (GN Ac.)').val,(currency==='$ '?'ARS ':currency)+'20000');assert.equal(find('CAMMESA').val,(currency==='$ '?'ARS ':currency)+'29');assert.equal(find('Imp. Déb/Cred').val,(currency==='$ '?'ARS ':currency)+'442');assert.equal(find('Efecto de los contratos').val,(currency==='$ '?'ARS 3450000':'USD 2300'));}
+ context.MONTH='2026_11';const rows=vm.runInContext(`mkResumenTable([{label:'Rem. Energía',val:'USD 50000'}])`,context);assert.equal(rows[0].label,'Rem. Energía');
+});

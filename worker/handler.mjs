@@ -1,3 +1,4 @@
+import {loadAltoContracts} from '../server/alto-contract-data.mjs';
 import {altoCatalog,readAltoConfig,saveAltoConfig} from '../server/alto-valle.mjs';
 import {billingPackage,savedAdjustments} from '../server/billing-downloads.mjs';
 import {adjustmentRows} from '../server/dte-policy.mjs';
@@ -19,6 +20,7 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
   if(url.pathname==='/api/billing/package'&&request.method==='GET'){const {bytes,filename}=await billingPackage(url.searchParams.get('month')||'',options.publishedFetcher||fetch);return new Response(bytes,{headers:{'Content-Type':filename.endsWith('.zip')?'application/zip':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+filename+'"','Cache-Control':'private, no-store'}});}
   if(url.pathname==='/api/billing/comparison'&&request.method==='GET')return json(200,await savedComparison(url.searchParams.get('month')||'',options.publishedFetcher||fetch));
   const binding=ctx.props?.CONNECTORS;
+  if(url.pathname==='/api/alto-valle/contracts'&&request.method==='GET')return json(200,await loadAltoContracts(url.searchParams.get('month')||'',options.altoFetcher||fetch));
   if(url.pathname==='/api/alto-valle/catalog'&&request.method==='GET')return json(200,await altoCatalog(options.altoFetcher||fetch));
   if(url.pathname==='/api/alto-valle/config'){
    if(request.method==='GET')return json(200,await readAltoConfig(options.altoFetcher||fetch));

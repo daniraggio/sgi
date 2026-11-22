@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 root=Path(__file__).resolve().parent.parent
 source=(root/'alto-valle/source.html').read_text()
-source=source[:source.index('// Bootstrap: run loader then init')]+ '</script>\n<script src="/alto-valle/integration.js"></script>\n</body></html>'
+source=source[:source.index('// Bootstrap: run loader then init')]+ '</script>\n<script src="/alto-valle/contracts.js"></script>\n<script src="/alto-valle/integration.js"></script>\n</body></html>'
 source=source.replace('Umbral CVP ($/MWh)','Umbral CVP (USD/MWh)').replace('RMIN cuando CVP &lt; umbral','RMIN cuando CVP &lt; umbral · USD/MWh').replace('RMIN cuando CVP ≥ umbral','RMIN cuando CVP ≥ umbral · USD/MWh')
 source=source.replace('</head>','<link rel="stylesheet" href="/alto-valle/integration.css"><link rel="stylesheet" href="/theme.css"></head>')
 source=source.replace('fmtFull(cg[m])','fmtFull((cg.byMaq[m]||0)+(cg.byMaqGA[m]||0))')
