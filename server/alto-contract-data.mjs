@@ -1,5 +1,5 @@
-import {pilotMonths} from '../alto-valle/contracts-model.mjs';
-import {billingTerms} from './model.mjs';
+import {billingTerms,energySchedule,projectPower} from './model.mjs';
+import {archivedRows} from './billing-downloads.mjs';
 const root='https://raw.githubusercontent.com/daniraggio/sgi/main/';
 export function approvedContractRows(period,state){
  const actual=period.rows?.filter(r=>r.society==='OECC');if(!actual?.length)throw Error('Faltan cantidades DTE de OECC para validar el período.');
@@ -10,11 +10,29 @@ export function approvedContractRows(period,state){
  return {nemo:r.nemo,client:r.client||contracts[0]?.client||r.nemo,unit:r.unit,q:r.q,price,ps:r.ps||contracts.find(c=>c.psContract)?.psContract||null,priceSource:Number.isFinite(override)||prices.length===1?'Contratos · precio comercial guardado':'Histórico comercial validado de la planilla'};
  });
 }
-export async function loadAltoContracts(month,fetcher=fetch){
- if(!pilotMonths.includes(month))throw {status:400,error:'Validación disponible solo para septiembre y octubre de 2026.'};
+const validMonth=month=>/^20\d{2}-(0[1-9]|1[0-2])$/.test(month);
+export function openContractPlan(state,month){
+ const energy=state.contracts.filter(c=>c.active&&c.society==='OECC'&&c.kind==='energy').flatMap(c=>{const s=energySchedule(c,state.contracts).find(s=>s.month===month);return s?[{nemo:c.nemo,client:c.client,capMWh:s.q,price:billingTerms(state,c).energyInvoicePrice??s.price}]:[];});
+ // MATP caps are MW; the stored forecast uses MW × 220. Contract cell edits use the same reversible conversion.
+ const power=projectPower(state).oecc.filter(r=>r.month===month).map(r=>({nemo:r.nemo,client:r.client,capMW:r.q/220,price:billingTerms(state,{society:'OECC',nemo:r.nemo}).powerPrice??r.price}));
+ for(const r of [...energy,...power])if(!Number.isFinite(r.price)||r.price<0||!Number.isFinite(r.capMWh??r.capMW)||(r.capMWh??r.capMW)<0)throw Error('Tope o precio comercial inválido.');
+ const share=month<='2027-03'?.2:state.generation?.find(g=>g.society==='OECC')?.monthlyShares?.[month];
+ return {energy,power,share};
+}
+export async function loadAltoContracts(month,fetcher=fetch,now=new Date()){
+ if(!validMonth(month))throw {status:400,error:'Elegí un mes válido.'};
  const read=async path=>{const r=await fetcher(root+path,{cache:'no-store'});if(!r.ok)throw {status:502,error:'No se pudo leer '+path+' para integrar contratos.'};return r.json();};
- const [facts,state]=await Promise.all([read('data/dte-billing.json'),read('data/state.json')]),entry=facts.periods?.filter(p=>p.month===month&&['I','II'].includes(p.edition)).sort((a,b)=>b.edition.localeCompare(a.edition))[0];if(!entry)throw Error('Falta incorporar un DTE del mes cerrado. No se reemplaza por proyecciones.');
- let period=entry;if(entry.cachePath){if(!new RegExp('^data/dte/'+month+'-'+entry.edition+'(?:-[a-f0-9]{16})?\\.json$').test(entry.cachePath))throw Error('Ruta de DTE inválida.');period=await read(entry.cachePath);}
- if(period.month!==month||period.edition!==entry.edition)throw Error('El DTE no corresponde al período seleccionado.');
- return {month,edition:period.edition,rows:approvedContractRows(period,state),stateRevision:state.revision,quantitiesSource:'DTE '+period.edition+' · MATE_MATER.ENERGIA_TOTAL (MWh) y MATP.POTENCIA_CONTRATADA (MWhrp), suma por unidades y comercializador',pricesSource:'Contratos e histórico comercial de la planilla; no se utilizan precios declarados ante CAMMESA',closed:true};
+ const current=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit'}).format(now),state=await read('data/state.json');
+ if(month>=current)return {month,closed:false,available:true,plan:openContractPlan(state,month),stateRevision:state.revision,pricesSource:'Precios comerciales de Contratos',quantitiesSource:'Estimación acumulada hasta el último dato operativo informado'};
+ const [facts,catalog]=await Promise.all([read('data/dte-billing.json'),read('data/billing-exports.json')]),latest=rows=>rows?.filter(p=>p.month===month&&['I','II'].includes(p.edition)).sort((a,b)=>b.edition.localeCompare(a.edition))[0],entry=latest(facts.periods),exported=latest(catalog.periods);
+ if(!entry&&!exported)return {month,closed:true,available:false,message:'Sin DTE guardado de este mes: se muestra la referencia operativa sin contratos.'};
+ let period=entry;
+ if(exported&&(!entry||exported.edition>entry.edition)){
+  const expected='exports/billing/Facturacion_'+month+'_DTE_'+exported.edition+'.xlsx';if(exported.path!==expected)throw Error('Ruta de facturación inválida.');
+  const r=await fetcher(root+expected,{cache:'no-store'});if(!r.ok)throw Error('No se pudo leer la facturación DTE guardada.');const billed=archivedRows(new Uint8Array(await r.arrayBuffer()));
+  period={month,edition:exported.edition,rows:billed.OECC,billingRows:{OECC:billed.OECC}};
+ }else if(entry.cachePath){if(!new RegExp('^data/dte/'+month+'-'+entry.edition+'(?:-[a-f0-9]{16})?\\.json$').test(entry.cachePath))throw Error('Ruta de DTE inválida.');period=await read(entry.cachePath);}
+ if(period.month!==month)throw Error('El DTE no corresponde al período seleccionado.');
+ const rows=approvedContractRows(period,state);
+ return {month,edition:period.edition,rows,stateRevision:state.revision,quantitiesSource:'DTE '+period.edition+' · MATE_MATER.ENERGIA_TOTAL (MWh) y MATP.POTENCIA_CONTRATADA (MWhrp), suma por unidades y comercializador',pricesSource:'Contratos e histórico comercial de la planilla; no se utilizan precios declarados ante CAMMESA',closed:true,available:true};
 }
