@@ -104,6 +104,7 @@ template=template.replace('<section id="overview"', (pathlib.Path(__file__).pare
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'billing.html').read_text()+'<section id="overview"')
 template=template.replace('<section id="overview"', (pathlib.Path(__file__).parent/'help.html').read_text()+'<section id="overview"')
 template=template.replace('<link rel="stylesheet" href="/contracts.css">','<style>'+(pathlib.Path(__file__).parent/'contracts.css').read_text()+'</style>')
+template=template.replace('<link rel="stylesheet" href="/theme.css">','<style>'+(pathlib.Path(__file__).parent/'theme.css').read_text()+'</style>')
 template=template.replace('</body>', '<script>'+(pathlib.Path(__file__).parent/'forecast.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'portfolio.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_view.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'oecc_extra.js').read_text()+'</script><script>'+(pathlib.Path(__file__).parent/'dte_audit.js').read_text()+'</script><script type="module" src="/contracts.js"></script></body>')
 template=template.replace('<script type="module" src="/contracts.js">','<script>'+(pathlib.Path(__file__).parent/'aet.js').read_text()+'</script><script type="module" src="/contracts.js">')
 (pathlib.Path(__file__).parent/'dist/index.html').write_text(template.replace('__DATA__',json.dumps(data,ensure_ascii=False)))

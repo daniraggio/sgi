@@ -6,7 +6,7 @@
 <title>Central Térmica Alto Valle</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f3f6f4;--surface:#ffffff;--surface2:#edf3ef;--border:rgba(22,48,49,0.07);--border2:rgba(22,48,49,0.14);--text:#163031;--muted:#718181;--accent:#167461;--danger:#b45042;--success:#13755b;--warn:#94641d;--purple:#6882a0;--teal:#4f8f7a;--orange:#aa8050;--mono:'Space Mono',monospace;--body:'DM Sans',sans-serif;--r:10px;--rl:16px;}
+:root{--bg:#f5f2eb;--surface:#fcfaf6;--surface2:#efede6;--border:rgba(22,48,49,0.07);--border2:rgba(22,48,49,0.14);--text:#132b46;--muted:#718181;--accent:#2344b3;--danger:#b45042;--success:#13755b;--warn:#94641d;--purple:#8a9abf;--teal:#6281cc;--orange:#8c9770;--mono:'Space Mono',monospace;--body:'DM Sans',sans-serif;--r:10px;--rl:16px;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.5;min-height:100vh;}
 .shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
@@ -22,8 +22,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .nav-group{margin-bottom:4px;}
 .nav-label{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;padding:8px 8px 4px;}
 .ni{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left;}
-.ni:hover{background:rgba(22,116,97,.08);color:var(--text);}
-.ni.active{background:rgba(22,116,97,.15);color:var(--accent);font-weight:500;}
+.ni:hover{background:rgba(35,68,179,.08);color:var(--text);}
+.ni.active{background:rgba(35,68,179,.15);color:var(--accent);font-weight:500;}
 .nd{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .15s;}
 .ni.active .nd{background:var(--accent);}
 .ni:hover .nd{background:var(--text);}
@@ -31,7 +31,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .hdr{margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
 .page-title{font-size:22px;font-weight:600;color:var(--text);}
 .page-sub{font-size:13px;color:var(--muted);margin-top:3px;}
-.badge{background:rgba(22,116,97,.15);color:var(--accent);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid rgba(22,116,97,.25);font-family:var(--mono);white-space:nowrap;}
+.badge{background:rgba(35,68,179,.15);color:var(--accent);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid rgba(35,68,179,.25);font-family:var(--mono);white-space:nowrap;}
 .sec{display:none;}.sec.active{display:block;}
 .kr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px;}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;}
@@ -48,7 +48,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .cw-sm{position:relative;width:100%;height:200px;}
 .tabs{display:flex;gap:3px;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:16px;flex-wrap:wrap;}
 .tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s;}
-.tab.active{background:rgba(22,116,97,.2);color:var(--accent);}
+.tab.active{background:rgba(35,68,179,.2);color:var(--accent);}
 .tab:hover:not(.active){color:var(--text);}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
 .g2 .card{margin-bottom:0;}
@@ -60,7 +60,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .tbl tr:hover td{background:rgba(22,48,49,.02);}
 .tbl .num{text-align:right;}.tbl .lbl{font-family:var(--body);font-size:12px;}
 .tbl .bold{font-weight:600;color:var(--text);}
-.tbl .hi{background:rgba(22,116,97,.07);}
+.tbl .hi{background:rgba(35,68,179,.07);}
 .tbl .hi2{background:rgba(148,100,29,.06);}
 .leg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;}
 .li{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);}
@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .hmap th{font-size:9px;color:var(--muted);font-weight:500;padding:0 2px 5px;text-align:center;}
 .hmap td{width:24px;height:20px;text-align:center;border-radius:2px;}
 .hmap .rl{font-family:var(--body);font-size:11px;color:var(--muted);text-align:right;padding-right:6px;width:auto;white-space:nowrap;}
-.note{font-size:11px;color:var(--muted);padding:10px 14px;background:rgba(22,116,97,.06);border-left:2px solid var(--accent);border-radius:4px;margin-top:10px;}
+.note{font-size:11px;color:var(--muted);padding:10px 14px;background:rgba(35,68,179,.06);border-left:2px solid var(--accent);border-radius:4px;margin-top:10px;}
 .tc-bar{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;margin-bottom:18px;flex-wrap:wrap;}
 .tc-bar label{font-size:12px;color:var(--muted);white-space:nowrap;}
 .inp{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;width:130px;text-align:right;}
@@ -86,18 +86,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .formula-box span{color:var(--muted);}
 .sub-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap;}
 .stab{padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:none;color:var(--muted);transition:all .15s;}
-.stab.active{background:rgba(22,116,97,.15);color:var(--accent);border-color:rgba(22,116,97,.3);}
+.stab.active{background:rgba(35,68,179,.15);color:var(--accent);border-color:rgba(35,68,179,.3);}
 .stab:hover:not(.active){color:var(--text);}
 .dbg-note{font-size:11px;color:var(--warn);padding:8px 12px;background:rgba(148,100,29,.07);border-left:2px solid var(--warn);border-radius:4px;margin-bottom:12px;}
 </style>
-<link rel="stylesheet" href="/alto-valle/integration.css"></head>
+<link rel="stylesheet" href="/alto-valle/integration.css"><link rel="stylesheet" href="/theme.css"></head>
 <body>
 
-<div id="load-screen" style="position:fixed;inset:0;background:#f3f6f4;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:20px">
-  <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#167461;letter-spacing:.1em">Central Térmica Alto Valle</div>
+<div id="load-screen" style="position:fixed;inset:0;background:#f5f2eb;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:20px">
+  <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#2344b3;letter-spacing:.1em">Central Térmica Alto Valle</div>
   <div id="load-status" style="font-size:13px;color:#718181;max-width:400px;text-align:center;line-height:1.6">Iniciando…</div>
   <div style="width:320px;height:4px;background:rgba(22,48,49,.08);border-radius:4px;overflow:hidden">
-    <div id="load-bar" style="height:100%;width:0%;background:#167461;border-radius:4px;transition:width .3s"></div>
+    <div id="load-bar" style="height:100%;width:0%;background:#2344b3;border-radius:4px;transition:width .3s"></div>
   </div>
   <div style="font-size:11px;color:#718181">Descargando planillas desde GitHub…</div>
 </div>
@@ -1301,7 +1301,7 @@ function calcRemDaily(m){
 }
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
-const CL=['#167461','#4f8f7a','#aa8050','#6882a0','#a97878','#13755b','#94641d'];
+const CL=['#2344b3','#6281cc','#8c9770','#8a9abf','#a97878','#13755b','#94641d'];
 const GR={color:'rgba(22,48,49,0.06)'};
 const TK={color:'#718181',font:{size:11}};
 // All digits, no decimals, thousands separator
@@ -1310,7 +1310,7 @@ const fmtFull=n=>n==null||isNaN(n)?'—':Math.round(n).toLocaleString('es-AR');
 // Compact for charts/small spaces
 const fmtK=n=>{if(n==null||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e9)return(n/1e9).toFixed(2)+'B';if(a>=1e6)return(n/1e6).toFixed(2)+'M';if(a>=1e3)return(n/1e3).toFixed(1)+'K';return n.toFixed(0);};
 const fmtM=n=>{if(n==null||isNaN(n))return'—';return(n/1e6).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})+' M';};
-function lerpColor(v,mn,mx){if(mx===mn)return'rgba(22,116,97,0.3)';const t=(v-mn)/(mx-mn);if(t<0.33)return`rgba(79,143,122,${0.2+t*1.5})`;if(t<0.66)return`rgba(148,100,29,${0.4+t})`;return`rgba(180,80,66,${0.5+t*0.5})`;}
+function lerpColor(v,mn,mx){if(mx===mn)return'rgba(35,68,179,0.3)';const t=(v-mn)/(mx-mn);if(t<0.33)return`rgba(79,143,122,${0.2+t*1.5})`;if(t<0.66)return`rgba(148,100,29,${0.4+t})`;return`rgba(180,80,66,${0.5+t*0.5})`;}
 let charts={};
 function mkChart(id,cfg){
   const el=document.getElementById(id);
@@ -1545,7 +1545,7 @@ async function buildResumen(){
       const costoStr=costoYest>0?` &nbsp;|&nbsp; Costo gas: <b>$${Math.round(costoYest/1e6).toLocaleString('es-AR')}M</b>`:'';
       const yestEl=document.getElementById('resumen-ayer');
       if(yestEl) yestEl.innerHTML=`
-        <div style="background:var(--surface2);border:1px solid rgba(22,116,97,.3);border-radius:10px;padding:14px 20px;margin-top:6px">
+        <div style="background:var(--surface2);border:1px solid rgba(35,68,179,.3);border-radius:10px;padding:14px 20px;margin-top:6px">
           <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:12px">Generación último día reportado — <span style="color:var(--accent)">${yestLabel}</span></div>
           <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end">
             <div>
@@ -1631,7 +1631,7 @@ function _buildResumenCharts(eChartId,_legId,cmoChartId,usdMode){
     if(!hasData) return null;
     let s=0; MKEYS.forEach(m=>{const r=getRows(EKEYS[m]).find(x=>x.fecha===d);if(r)s+=eMWh(r)||0;}); return s;
   });
-  ds.push({label:'TOTAL',data:totData,borderColor:'#163031',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:2,borderDash:[4,3],spanGaps:false});
+  ds.push({label:'TOTAL',data:totData,borderColor:'#132b46',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:2,borderDash:[4,3],spanGaps:false});
   mkChart(eChartId,{type:'line',data:{labels:dates.map(fmtDate),datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:legendOpts,tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+Math.round(ctx.parsed.y).toLocaleString('es-AR')+' MWh'}}},scales:{x:{grid:GR,ticks:{...TK,maxRotation:45,maxTicksLimit:12}},y:{min:0,grid:GR,ticks:{...TK,callback:v=>Math.round(v).toLocaleString('es-AR')}}}}});
   const cmoR=getRows('PRECIOS-CMO');
   const cmoData=tc?cmoR.map(r=>r.avg/tc):cmoR.map(r=>r.avg);
@@ -1780,7 +1780,7 @@ function _renderResumenUSD(){
     const cmoYest=cmoRowY?(cmoRowY.h?cmoRowY.h.reduce((a,b)=>a+(b||0),0)/24:cmoRowY.avg):null;
     const yestEl=document.getElementById('resumenUSD-ayer');
     if(yestEl) yestEl.innerHTML=`
-      <div style="background:var(--surface2);border:1px solid rgba(22,116,97,.3);border-radius:10px;padding:14px 20px;margin-top:6px">
+      <div style="background:var(--surface2);border:1px solid rgba(35,68,179,.3);border-radius:10px;padding:14px 20px;margin-top:6px">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:12px">Generación último día reportado — <span style="color:var(--accent)">${yestLabel}</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end">
           <div>
@@ -1869,7 +1869,7 @@ function buildHowItWorks(){}
 function buildEnergia(){
   const horas=MKEYS.map(m=>horasOperadas(EKEYS[m]));
   document.getElementById('kpi-energia').innerHTML=MKEYS.map((m,i)=>`<div class="kpi"><div class="kpi-lbl">${m} — acumulado</div><div class="kpi-val" style="color:${CL[i]}">${fmtFull(monthlyMWh(EKEYS[m]))}</div><div class="kpi-unit">MWh · ${horas[i]}hs op.</div></div>`).join('')+
-    `<div class="kpi" style="border-color:rgba(22,116,97,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val a">${fmtFull(MKEYS.reduce((s,m)=>s+monthlyMWh(EKEYS[m]),0))}</div><div class="kpi-unit">MWh mes</div></div>`;
+    `<div class="kpi" style="border-color:rgba(35,68,179,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val a">${fmtFull(MKEYS.reduce((s,m)=>s+monthlyMWh(EKEYS[m]),0))}</div><div class="kpi-unit">MWh mes</div></div>`;
   document.getElementById('tabs-energia').innerHTML=MKEYS.map((m,i)=>`<button class="tab ${i===eActive?'active':''}" onclick="setETab(${i})">${m}</button>`).join('')+'<button class="tab" onclick="setETab(-1)">Todos</button>';
   renderEChart();
 }
@@ -1881,7 +1881,7 @@ function renderEChart(){
     const eDaySum=(m,d)=>{const r=getRows(EKEYS[m]).find(x=>x.fecha===d);if(!r)return null;return r.h?r.h.reduce((a,b)=>a+(b||0),0):(r.avg||0)*24;};
     ds=MKEYS.map((m,i)=>({label:m,data:dates.map(d=>eDaySum(m,d)),borderColor:CL[i],backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:1.5,spanGaps:true}));
     const tot=dates.map(d=>{let s=0;MKEYS.forEach(m=>{const v=eDaySum(m,d);if(v!=null)s+=v;});return s;});
-    ds.push({label:'TOTAL',data:tot,borderColor:'#163031',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:2.5,borderDash:[5,3]});
+    ds.push({label:'TOTAL',data:tot,borderColor:'#132b46',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:2.5,borderDash:[5,3]});
     lbls=dates.map(fmtDate);document.getElementById('eChartTitle').textContent='Energía — todos + total';
   } else {
     const m=MKEYS[eActive];const rows=getRows(EKEYS[m]);
@@ -1996,7 +1996,7 @@ function buildDbgTable(tblId,sheetKey){
     const r=rows.find(x=>x.fecha===fecha);
     html+=`<tr><td class="rl">${fmtDate(fecha)}</td>`;
     if(r){
-      (r.h||Array(24).fill(r.avg)).forEach(v=>{html+=`<td class="num" title="${v!=null?fmtN(v,0):''}" style="${v&&v>0?'background:rgba(22,116,97,0.12)':''}">${v&&v>0?fmtK(v):''}</td>`;});
+      (r.h||Array(24).fill(r.avg)).forEach(v=>{html+=`<td class="num" title="${v!=null?fmtN(v,0):''}" style="${v&&v>0?'background:rgba(35,68,179,0.12)':''}">${v&&v>0?fmtK(v):''}</td>`;});
       html+=`<td class="num" style="color:var(--accent)">${fmtK(r.avg)}</td>`;
     } else {
       html+=Array(25).fill('<td class="num" style="color:var(--border2)">—</td>').join('');
@@ -2250,7 +2250,7 @@ function buildIndisp(){
     }
   });
 
-  const METODOLOGIA=`<div style="background:var(--surface2);border:1px solid rgba(22,116,97,.25);border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
+  const METODOLOGIA=`<div style="background:var(--surface2);border:1px solid rgba(35,68,179,.25);border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
     <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">Metodología del cálculo</div>
     <b>Renta perdida:</b> En horas i-i/lib con CVP &gt; 0: si el gemelo de tipo (TG23↔TG22, TV11↔TV12) está despachado esa hora, se copia su tratamiento real completo (mismo E, CVP, estado ===/COP/CMB y fórmula que la remuneración real). Si el gemelo también está i-i/lib, se usa el método de respaldo: Rem = (CVP + MAX(RMIN ; (CMO×FP−CVP)×FRA×FRC)) × E, con E = POT_NOM, solo si CMO×FP&gt;CVP (y CVP&gt;0) · Gas = (Comb+Transp) × E · Renta = Rem − Gas = OyM×E + MAX(RMIN;...)×E. FRC=1 si el tipo de gas de la hora (propia o del gemelo/sustituto usado) es Gas Propio (GA), FRC=0.8 si es Gas de Acuerdo (GX) — igual que en la remuneración real. Si no hay CVP disponible (máquina sin datos en el mes) no se calcula energía.<br>
     <b>Potencia nominal:</b> TG = 24 MW · TV = 11 MW (fijo).<br>
@@ -2271,7 +2271,7 @@ function buildIndisp(){
     <div class="kpi"><div class="kpi-lbl">Energía potencial</div><div class="kpi-val a">${fmtU(Math.round(totE))}</div><div class="kpi-unit">MWh (horas CMO&gt;CVP)</div></div>
     <div class="kpi"><div class="kpi-lbl">Renta marginal E perdida</div><div class="kpi-val s">USD ${fmtU(totRenta/tc)}</div><div class="kpi-unit">MAX(RMIN ; (CMO×FP−CVP)×FRA×FRC)×E</div></div>
     <div class="kpi"><div class="kpi-lbl">Rem. Potencia perdida</div><div class="kpi-val d">USD ${fmtU(totRemPot/tc)}</div><div class="kpi-unit">HRP hours</div></div>
-    <div class="kpi" style="border-color:rgba(22,116,97,.5)"><div class="kpi-lbl">Renta total perdida</div><div class="kpi-val" style="color:var(--accent);font-size:22px">USD ${fmtU(totTotal)}</div><div class="kpi-unit">Renta E + Rem. Pot.</div></div>
+    <div class="kpi" style="border-color:rgba(35,68,179,.5)"><div class="kpi-lbl">Renta total perdida</div><div class="kpi-val" style="color:var(--accent);font-size:22px">USD ${fmtU(totTotal)}</div><div class="kpi-unit">Renta E + Rem. Pot.</div></div>
   </div>`;
 
   const hdrs=`<tr style="border-bottom:2px solid var(--border2)">
@@ -2342,7 +2342,7 @@ function buildCvpTotal(){
     const avgUSD=tc2>0?avgCVP/tc2:0;
     return `<div class="kpi"><div class="kpi-lbl">${m} CVP Total</div><div class="kpi-val" style="color:${CL[i]}">${fmtK(t)}</div><div class="kpi-unit">$ mes · prom ${fmtK(avgCVP)}/MWh · ${fmtN(avgUSD,1)} USD/MWh</div></div>`;
   }).join('')+
-  `<div class="kpi" style="border-color:rgba(22,116,97,.35)"><div class="kpi-lbl">TOTAL MES</div><div class="kpi-val a">${fmtK(totalMes)}</div><div class="kpi-unit">$ mes</div></div>`;
+  `<div class="kpi" style="border-color:rgba(35,68,179,.35)"><div class="kpi-lbl">TOTAL MES</div><div class="kpi-val a">${fmtK(totalMes)}</div><div class="kpi-unit">$ mes</div></div>`;
 
   // Build per-machine CVP total rows for table
   const [_y,_m]=MONTH.split('_').map(Number);
@@ -2383,7 +2383,7 @@ function buildCvpTotal(){
         ${mi===0?`<td class="rl" rowspan="4" style="vertical-align:middle">${fmtDate(fecha)}</td>`:''}
         <td style="font-size:11px;color:${CL[mi]};padding:3px 8px;font-weight:600">${m}</td>`;
       if(hasData){
-        tots.forEach(v=>{ tblHtml+=`<td class="num" style="font-size:10px;${v>0?'background:rgba(22,116,97,0.1)':''}">${v>0?fmtK(v):''}</td>`; });
+        tots.forEach(v=>{ tblHtml+=`<td class="num" style="font-size:10px;${v>0?'background:rgba(35,68,179,0.1)':''}">${v>0?fmtK(v):''}</td>`; });
         tblHtml+=`<td class="num" style="color:var(--accent);font-size:11px">${fmtK(avg)}</td>`;
       } else {
         tblHtml+=Array(25).fill(`<td class="num" style="color:var(--border2);font-size:10px">—</td>`).join('');
@@ -2414,7 +2414,7 @@ function buildCvpTotal(){
         const avg=tots.reduce((a,b)=>a+b,0)/24;
         rows+=`<tr><td class="rl">${fmtDate(fecha)}</td>`;
         if(hasData){
-          tots.forEach(v=>{ rows+=`<td class="num" style="font-size:10px;${v>0?'background:rgba(22,116,97,0.1)':''}">${v>0?fmtK(v):''}</td>`; });
+          tots.forEach(v=>{ rows+=`<td class="num" style="font-size:10px;${v>0?'background:rgba(35,68,179,0.1)':''}">${v>0?fmtK(v):''}</td>`; });
           rows+=`<td class="num" style="color:var(--accent)">${fmtK(avg)}</td>`;
         } else {
           rows+=Array(25).fill(`<td class="num" style="color:var(--border2)">—</td>`).join('');
@@ -2435,19 +2435,19 @@ function buildCvpTotal(){
 function buildCombrem(){
   const {cvp}=getComputedTotals();
   document.getElementById('kpi-combrem').innerHTML=MKEYS.map((m,i)=>`<div class="kpi"><div class="kpi-lbl">${m} acumulado</div><div class="kpi-val" style="color:${CL[i]}">${fmtK(cvp['comb'+m])}</div><div class="kpi-unit">$ mes</div></div>`).join('')+
-    `<div class="kpi" style="border-color:rgba(22,116,97,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val d">${fmtK(cvp.combTotal)}</div><div class="kpi-unit">$ mes</div></div>`;
+    `<div class="kpi" style="border-color:rgba(35,68,179,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val d">${fmtK(cvp.combTotal)}</div><div class="kpi-unit">$ mes</div></div>`;
   buildCvpSection('combrem',['AVALTG23-CVPCOMBREM-GX','AVALTG22-CVPCOMBREM-GX','AVALTV11-CVPCOMBREM-GX','AVALTV12-CVPCOMBREM-GX'],['TG23','TG22','TV11','TV12'],'cCombRem','combremTitle','tbl-combrem-dbg','tabs-combrem');
 }
 function buildTranspProv(){
   const {cvp}=getComputedTotals();
   document.getElementById('kpi-transpprov').innerHTML=['TG22','TG23'].map((m,i)=>`<div class="kpi"><div class="kpi-lbl">${m} acumulado</div><div class="kpi-val" style="color:${CL[i]}">${fmtK(cvp['transp'+m])}</div><div class="kpi-unit">$ mes</div></div>`).join('')+
-    `<div class="kpi" style="border-color:rgba(22,116,97,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val a">${fmtK(cvp.transpTotal)}</div><div class="kpi-unit">$ mes</div></div>`;
+    `<div class="kpi" style="border-color:rgba(35,68,179,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val a">${fmtK(cvp.transpTotal)}</div><div class="kpi-unit">$ mes</div></div>`;
   buildCvpSection('transpprov',['AVALTG22-CVPTRANSPREMPROV-GX','AVALTG23-CVPTRANSPREMPROV-GX'],['TG22','TG23'],'cTranspProv','transpTitle','tbl-transp-dbg','tabs-transpprov');
 }
 function buildOym(){
   const {cvp}=getComputedTotals();
   document.getElementById('kpi-oym').innerHTML=MKEYS.map((m,i)=>`<div class="kpi"><div class="kpi-lbl">${m} acumulado</div><div class="kpi-val" style="color:${CL[i]}">${fmtK(cvp['oym'+m])}</div><div class="kpi-unit">$ mes</div></div>`).join('')+
-    `<div class="kpi" style="border-color:rgba(22,116,97,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val a">${fmtK(cvp.oymTotal)}</div><div class="kpi-unit">$ mes</div></div>`;
+    `<div class="kpi" style="border-color:rgba(35,68,179,.35)"><div class="kpi-lbl">TOTAL</div><div class="kpi-val a">${fmtK(cvp.oymTotal)}</div><div class="kpi-unit">$ mes</div></div>`;
   buildCvpSection('oym',['AVALTG23-CVPOYMREM-GX','AVALTG22-CVPOYMREM-GX','AVALTV11-CVPOYMREM-GX','AVALTV12-CVPOYMREM-GX'],MKEYS,'cOym','oymTitle','tbl-oym-dbg','tabs-oym');
 }
 
@@ -2466,13 +2466,13 @@ function buildPotencia(){
   document.getElementById('kpi-pot').innerHTML=
     MKEYS.map((m,i)=>`<div class="kpi"><div class="kpi-lbl">${m} — pot. acum.</div><div class="kpi-val" style="color:${CL[i]}">${fmtFull(mwhPerMaq[i])}</div><div class="kpi-unit">MW·h mes · prom ${fmtN(avgPerMaq[i],2)} MW</div></div>`).join('')+
     `<div class="kpi" style="border-color:rgba(79,143,122,.4)"><div class="kpi-lbl">POT TOTAL MW·h</div><div class="kpi-val" style="color:var(--teal)">${fmtFull(totalMWh)}</div><div class="kpi-unit">MW·h mes · prom ${fmtN(sumAvg,2)} MW (Σ 4 máq.)</div></div>`+
-    `<div class="kpi" style="border-color:rgba(22,116,97,.4)"><div class="kpi-lbl">Potencia del mes</div><div class="kpi-val a">${fmtN(potMes,2)}</div><div class="kpi-unit">MW · promedio 4 máquinas</div></div>`+
+    `<div class="kpi" style="border-color:rgba(35,68,179,.4)"><div class="kpi-lbl">Potencia del mes</div><div class="kpi-val a">${fmtN(potMes,2)}</div><div class="kpi-unit">MW · promedio 4 máquinas</div></div>`+
     `<div class="kpi" style="border-color:rgba(167,139,250,.4)"><div class="kpi-lbl">Rem. potencia TOTAL</div><div class="kpi-val p">${fmtFull(remP.TOTAL)}</div><div class="kpi-unit">USD (Kp=${getKP()})</div></div>`;
   // Potencia chart (separate from energía)
   const dates=allDates(Object.values(POTKEYS));
   const ds=MKEYS.map((m,i)=>({label:`${m} POT_DISP (MW)`,data:dates.map(d=>{const r=getRows(POTKEYS[m]).find(x=>x.fecha===d);return r?r.avg:null;}),borderColor:CL[i],backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:1.5,spanGaps:true}));
   const totLine=dates.map(d=>{let s=0;MKEYS.forEach(m=>{const r=getRows(POTKEYS[m]).find(x=>x.fecha===d);if(r)s+=r.avg||0;});return s;});
-  ds.push({label:'TOTAL (MW)',data:totLine,borderColor:'#163031',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:2.5,borderDash:[5,3]});
+  ds.push({label:'TOTAL (MW)',data:totLine,borderColor:'#132b46',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:2.5,borderDash:[5,3]});
   // PPAD line on secondary axis
   const ppadRows=getRows('PRECIOS-PPAD');
   ds.push({label:'PPAD (USD/MW)',data:dates.map(d=>{const r=ppadRows.find(x=>x.fecha===d);return r?r.avg:null;}),borderColor:'#94641d',backgroundColor:'transparent',fill:false,tension:0,pointRadius:3,borderWidth:1.5,borderDash:[2,2],yAxisID:'y2',spanGaps:true});
@@ -2561,7 +2561,7 @@ function renderRemSection(){
 function renderRemMachine(m){
   const daily=calcRemDaily(m);
   mkChart('cRemLine',{type:'line',data:{labels:daily.map(x=>fmtDate(x.fecha)),datasets:[
-    {label:`REM ${m} ($/MWh)`,data:daily.map(x=>x.remAvg),borderColor:'#6882a0',backgroundColor:'#6882a022',fill:true,tension:0.3,pointRadius:3,borderWidth:2},
+    {label:`REM ${m} ($/MWh)`,data:daily.map(x=>x.remAvg),borderColor:'#8a9abf',backgroundColor:'#8a9abf22',fill:true,tension:0.3,pointRadius:3,borderWidth:2},
     {label:`CVP ${m} ($/MWh)`,data:daily.map(x=>x.cvpAvg),borderColor:'#b45042',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:1.5,borderDash:[4,3]},
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:legendOpts},scales:{x:{grid:GR,ticks:{...TK,maxRotation:45}},y:{min:0,grid:GR,ticks:{...TK,callback:v=>'$'+fmtK(v)}}}}});
   document.getElementById('tbl-rem').innerHTML=`<thead><tr><th>Fecha</th><th class="num">E (MWh)</th><th class="num">CVP_Comb</th><th class="num">CVP_Transp</th><th class="num">CVP_OyM</th><th class="num">CVP_Total</th><th class="num">REM avg</th><th class="num">REM total $</th></tr></thead><tbody>${
@@ -2577,7 +2577,7 @@ function renderRemTotal(){
     return{fecha,E:sumE,remAvg:sumE?sumRemE/sumE:0,cvpAvg:sumE?sumCvpE/sumE:0,remTotal:sumRemE};
   }).filter(x=>x.E>0);
   mkChart('cRemLine',{type:'line',data:{labels:combined.map(x=>fmtDate(x.fecha)),datasets:[
-    {label:'REM prom. ponderado ($/MWh)',data:combined.map(x=>x.remAvg),borderColor:'#6882a0',backgroundColor:'#6882a022',fill:true,tension:0.3,pointRadius:3,borderWidth:2},
+    {label:'REM prom. ponderado ($/MWh)',data:combined.map(x=>x.remAvg),borderColor:'#8a9abf',backgroundColor:'#8a9abf22',fill:true,tension:0.3,pointRadius:3,borderWidth:2},
     {label:'CVP prom. ponderado ($/MWh)',data:combined.map(x=>x.cvpAvg),borderColor:'#b45042',backgroundColor:'transparent',fill:false,tension:0.3,pointRadius:2,borderWidth:1.5,borderDash:[4,3]},
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:legendOpts},scales:{x:{grid:GR,ticks:{...TK,maxRotation:45}},y:{min:0,grid:GR,ticks:{...TK,callback:v=>'$'+fmtK(v)}}}}});
   document.getElementById('tbl-rem').innerHTML=`<thead><tr><th>Fecha</th><th class="num">E total (MWh)</th><th class="num">CVP prom.</th><th class="num">REM prom.</th><th class="num">REM total $</th></tr></thead><tbody>${

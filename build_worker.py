@@ -7,7 +7,7 @@ assets={}
 assets['/docs/INTEGRACION.md']={'content':(R/'docs/INTEGRACION.md').read_text(),'type':'text/markdown; charset=utf-8'}
 for route,path,mime in [('/index.html','dist/index.html','text/html; charset=utf-8'),('/contracts.js','contracts.js','text/javascript; charset=utf-8'),('/contracts.css','contracts.css','text/css; charset=utf-8'),('/model.mjs','server/model.mjs','text/javascript; charset=utf-8'),('/actuals.mjs','server/actuals.mjs','text/javascript; charset=utf-8')]:
  assets[route]={'content':(R/path).read_text(),'type':mime}
-for path in ['app-shell.html','app-shell.css','app-shell.js','alto-valle/index.html','alto-valle/integration.js','alto-valle/integration.css']:
+for path in ['theme.css','app-shell.html','app-shell.css','app-shell.js','alto-valle/index.html','alto-valle/integration.js','alto-valle/integration.css']:
  assets['/'+path]={'content':(R/path).read_text(),'type':'text/html; charset=utf-8' if path.endswith('.html') else 'text/css; charset=utf-8' if path.endswith('.css') else 'text/javascript; charset=utf-8'}
 runtime=R/'.sites-runtime';runtime.mkdir(exist_ok=True)
 entry=runtime/'worker-entry.mjs'

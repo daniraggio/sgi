@@ -245,3 +245,7 @@ La vista previa `scripts/preview.mjs` es de solo lectura y no implementa autorid
 El catálogo mensual de CTAVAL se consulta desde `data/alto-valle-catalog.json` en SGI, con metadatos de archivos efectivamente verificados en CTAVAL. Los nuevos meses posteriores al índice se detectan mediante HEAD a la ruta mensual de CTAVAL; no se utiliza la API pública de listado de GitHub desde el Worker. Las cantidades y cálculos siguen saliendo exclusivamente del XLS operativo seleccionado.
 
 La barra lateral y Alto Valle usan la paleta clara, verde y gris de Contratos. El menú tiene cabecera compacta, grupos desplegables y un único espacio de desplazamiento.
+
+### Paleta SGI
+
+`theme.css` comparte la paleta del sistema destino entre la portada, Contratos y Alto Valle: menú #183496, primario #2344b3, seleccionado #1d3fb5, fondo #f5f2eb, superficies #fcfaf6 y texto #132b46. Los colores de resultado positivo/negativo, prioridad y real/proyectado conservan su significado. Esta capa cambia la presentación sin modificar datos ni fórmulas.
