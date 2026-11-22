@@ -1,3 +1,4 @@
+import {altoCatalog,readAltoConfig,saveAltoConfig} from '../server/alto-valle.mjs';
 import {billingPackage,savedAdjustments} from '../server/billing-downloads.mjs';
 import {adjustmentRows} from '../server/dte-policy.mjs';
 import {billingChanges} from '../server/billing-differences.mjs';
@@ -18,6 +19,15 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
   if(url.pathname==='/api/billing/package'&&request.method==='GET'){const {bytes,filename}=await billingPackage(url.searchParams.get('month')||'',options.publishedFetcher||fetch);return new Response(bytes,{headers:{'Content-Type':filename.endsWith('.zip')?'application/zip':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+filename+'"','Cache-Control':'private, no-store'}});}
   if(url.pathname==='/api/billing/comparison'&&request.method==='GET')return json(200,await savedComparison(url.searchParams.get('month')||'',options.publishedFetcher||fetch));
   const binding=ctx.props?.CONNECTORS;
+  if(url.pathname==='/api/alto-valle/catalog'&&request.method==='GET')return json(200,await altoCatalog(options.altoFetcher||fetch));
+  if(url.pathname==='/api/alto-valle/config'){
+   if(request.method==='GET')return json(200,await readAltoConfig(options.altoFetcher||fetch));
+   if(request.method!=='PUT')return json(405,{error:'Método no permitido'});
+   if(request.headers.get('origin')!==url.origin)return json(403,{error:'Origen no autorizado'});
+   if(request.headers.get('content-type')!=='application/json')return json(415,{error:'Se requiere JSON'});
+   const text=await request.text();if(text.length>100000)return json(413,{error:'Configuración demasiado grande'});
+   return json(200,await saveAltoConfig(JSON.parse(text),(action,args)=>invoke(binding,action,args)));
+  }
   const service=createDteService({base,fetcher:options.fetcher,history:async()=>JSON.parse((await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/billing-history.json',ref:'main'})).content).records,read:path=>invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path,ref:'main'}),write:(path,content,sha)=>invoke(binding,sha?'update_file':'create_file',{repository_full_name:REPOSITORY,branch:'main',path,content,message:'SGI: incorporar DTE y valores reales',...(sha?{sha}:{})}),sharepoint:(action,args)=>invoke(binding,action,args,SHAREPOINT)});
   if(url.pathname==='/api/actuals'&&request.method==='GET')return json(200,await service.actuals());
   if(['/api/dte/discover','/api/dte/prepare','/api/dte/publish'].includes(url.pathname)){
@@ -55,5 +65,5 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
   return json(404,{error:'Ruta no encontrada'});
  }
  if(request.method!=='GET')return json(405,{error:'Método no permitido'});
- const file=assets[url.pathname==='/'?'/index.html':url.pathname];if(!file)return json(404,{error:'No encontrado'});return new Response(file.content,{headers:{'Content-Type':file.type,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
+ const aliases={'/':'/app-shell.html','/index.html':'/app-shell.html','/contratos':'/index.html','/contratos/':'/index.html','/alto-valle':'/alto-valle/index.html','/alto-valle/':'/alto-valle/index.html'};const file=assets[aliases[url.pathname]||url.pathname];if(!file)return json(404,{error:'No encontrado'});return new Response(file.content,{headers:{'Content-Type':file.type,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
  }catch(e){return json(e.status||400,{error:e.error||e.message||'No se pudo completar la operación.',...(e.connectorStatus?{connectorStatus:e.connectorStatus}:{}),...(e.connectorResult?{connectorResult:e.connectorResult}:{}),...(e.chatGPTSignInPath?{chatGPTSignInPath:e.chatGPTSignInPath}:{})})}}}}

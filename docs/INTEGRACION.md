@@ -223,3 +223,19 @@ Desde esta versión, las descargas DTE II son ajustes II − I: se agrupa por so
 `server/billing-downloads.mjs` transforma los originales archivados en ajustes, incluso para visitantes sin conectores personales. La comparación del XLSX mantiene PS y precio; el popup muestra solo cantidades y unidades.
 
 DTE I usa `/api/billing/package`: cuando `data/billing-models.json` registra los dos modelos del mes, descarga un ZIP con el archivo para bot y los modelos detallados OESC y OECC. Los modelos revisados de octubre conservan fórmulas e histórico OESC, sin sección adicional de comisión CALSA. Solo se incluyen modelos del mes solicitado; para meses sin modelos revisados se entrega el XLSX del bot. Incorporar un nuevo modelo mensual requiere guardar sus dos XLSX y registrar sus rutas en el catálogo. No se reutiliza un modelo de octubre para otro mes.
+
+## Módulos Contratos / Alto Valle
+
+La portada (`app-shell.html`) reúne dos módulos locales bajo el mismo sitio y sus permisos actuales. La barra izquierda cambia entre Contratos y Alto Valle. `/contratos/` conserva el tablero comercial; `/alto-valle/` incorpora la vista operativa de CTAVAL. Cada módulo conserva su ámbito de ejecución y sus estilos para evitar interferencias entre cálculos, tablas y librerías. Las subsecciones de Alto Valle se seleccionan desde el menú común. El módulo operativo se inicializa solo al abrirlo.
+
+`alto-valle/source.html` conserva el código de cálculo revisado de CTAVAL, excluyendo la documentación de destinos internos del reporte y el mecanismo obsoleto de tokens personales. `scripts/build-alto-valle.py` prepara la vista integrada con sus cálculos existentes; `alto-valle/integration.js` adapta navegación, carga mensual y configuración. Los datos siguen siendo `AVAL_YYYY_MM.xls` y `resumen_precios_previstos.xlsx` del repositorio CTAVAL. El catálogo se descubre por nombre, sin descargar los XLS; solo se descarga el período consultado y se conserva en memoria durante la visita. Actualizar datos vuelve a consultar el catálogo, la configuración y el mes seleccionado.
+
+API operativa: `GET /api/alto-valle/catalog`, `GET /api/alto-valle/config` y `PUT /api/alto-valle/config`. Leer los datos públicos de CTAVAL no exige una conexión personal con GitHub. Guardar exige identidad del sitio, origen propio, JSON acotado, parámetros validados, conexión GitHub y consentimiento del visitante. Se verifica una revisión SHA-256 del contenido y se escribe con el SHA vigente del proveedor; un cambio concurrente devuelve 409. Se modifica exclusivamente `daniraggio/CTAVAL/data/config.json`, preservando los demás meses. No se guardan tokens personales en el navegador.
+
+Se corrigió la lectura de las tarjetas de costo por máquina y se presentan GX + GA de forma consistente en el detalle de Costos. Se conserva el modelo de remuneración operativo existente; no se incorpora todavía la energía ni la potencia contratadas de SGI. El resumen comercial conserva la liquidación por DTE y la facturación mantiene sus reglas I/II y umbrales.
+
+Tipos de cambio: facturación usa el vendedor BNA del día previo a emitir; Alto Valle mantiene el TC de cierre CAMMESA guardado para meses finalizados. El mes en curso puede refrescar la referencia mayorista utilizada por el modelo existente. Si falta el cierre histórico, se pide completarlo y no se sustituye por la cotización actual.
+
+Los workflows, destinatarios y HTML original de CTAVAL se conservan para que GitHub Actions siga tomando y enviando su captura como hasta ahora. Las mejoras de interfaz de esta integración no reescriben ese HTML. Antes de retirarlo debe adaptarse explícitamente el proceso de captura.
+
+La vista previa `scripts/preview.mjs` es de solo lectura y no implementa autoridad de conectores ni permite guardar. No se incluye en el Worker desplegado. Las escrituras reales se prueban mediante la API publicada con la sesión y consentimiento del visitante.
