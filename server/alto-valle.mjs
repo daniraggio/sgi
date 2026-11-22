@@ -3,12 +3,23 @@ export const ALTO_REPO='daniraggio/CTAVAL';
 const raw='https://raw.githubusercontent.com/'+ALTO_REPO+'/main/data/';
 const machines=['TG23','TG22','TV11','TV12'];
 export const validateMonth=m=>{if(typeof m!=='string'||!/^20\d{2}_(0[1-9]|1[0-2])$/.test(m))throw {status:400,error:'Período de Alto Valle inválido.'};return m;};
-export async function altoCatalog(fetcher=fetch){
- const r=await fetcher('https://api.github.com/repos/'+ALTO_REPO+'/contents/data?ref=main',{headers:{Accept:'application/vnd.github+json','User-Agent':'SGI-Alto-Valle'},cf:{cacheTtl:300,cacheEverything:true}});
- if(!r.ok)throw {status:502,error:'No se pudo consultar el histórico de Alto Valle. Volvé a intentar.'};
- const data=await r.json();if(!Array.isArray(data))throw Error('Catálogo de Alto Valle inválido.');
- const periods=data.filter(x=>x.type==='file'&&/^AVAL_20\d{2}_(0[1-9]|1[0-2])\.xls$/.test(x.name)).map(x=>({month:x.name.slice(5,12),filename:x.name,size:x.size,sha:x.sha})).sort((a,b)=>a.month.localeCompare(b.month));
- if(!periods.length)throw Error('No hay planillas disponibles de Alto Valle.');return {repository:ALTO_REPO,periods};
+export function normalizeAltoCatalog(data){
+ if(data?.schemaVersion!==1||data.repository!==ALTO_REPO||!Array.isArray(data.periods)||!data.periods.length||data.periods.length>1200)throw Error('Catálogo de Alto Valle inválido.');
+ const months=new Set(),periods=data.periods.map(p=>{const month=validateMonth(p.month);if(p.filename!=='AVAL_'+month+'.xls'||!Number.isFinite(p.size)||p.size<=0||months.has(month))throw Error('Período de Alto Valle inválido en el catálogo.');months.add(month);return {month,filename:p.filename,size:p.size};}).sort((a,b)=>a.month.localeCompare(b.month));
+ return {repository:ALTO_REPO,periods};
+}
+export async function altoCatalog(fetcher=fetch,now=new Date()){
+ const r=await fetcher('https://raw.githubusercontent.com/daniraggio/sgi/main/data/alto-valle-catalog.json',{cache:'no-store'});
+ if(!r.ok)throw {status:502,error:'No se pudo consultar el índice de meses de Alto Valle. Volvé a intentar.'};
+ const catalog=normalizeAltoCatalog(await r.json());
+ // Discover new monthly files directly, without GitHub's directory API.
+ // Stored metadata is never used as a substitute for the operating XLS itself.
+ const latest=catalog.periods.at(-1).month,parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Argentina/Buenos_Aires',year:'numeric',month:'2-digit'}).formatToParts(now),year=+parts.find(p=>p.type==='year').value,month=+parts.find(p=>p.type==='month').value,end=year*12+month-1;
+ const [y,m]=latest.split('_').map(Number),start=y*12+m,candidates=[];
+ if(end-start>=36)throw {status:502,error:'El índice de Alto Valle necesita una actualización del histórico.'};
+ for(let n=start;n<=end;n++)candidates.push(Math.floor(n/12)+'_'+String(n%12+1).padStart(2,'0'));
+ const probes=await Promise.all(candidates.map(async month=>{try{const r=await fetcher(raw+'AVAL_'+month+'.xls',{method:'HEAD'});return r.ok?{month,filename:'AVAL_'+month+'.xls',size:Number(r.headers.get('content-length'))||null}:null;}catch{return null;}}));
+ catalog.periods.push(...probes.filter(Boolean));return catalog;
 }
 export async function configRevision(content){const b=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(content)));return [...b].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export async function readAltoConfig(fetcher=fetch){

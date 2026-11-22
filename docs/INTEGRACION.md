@@ -239,3 +239,9 @@ Tipos de cambio: facturación usa el vendedor BNA del día previo a emitir; Alto
 Los workflows, destinatarios y HTML original de CTAVAL se conservan para que GitHub Actions siga tomando y enviando su captura como hasta ahora. Las mejoras de interfaz de esta integración no reescriben ese HTML. Antes de retirarlo debe adaptarse explícitamente el proceso de captura.
 
 La vista previa `scripts/preview.mjs` es de solo lectura y no implementa autoridad de conectores ni permite guardar. No se incluye en el Worker desplegado. Las escrituras reales se prueban mediante la API publicada con la sesión y consentimiento del visitante.
+
+### Catálogo operativo y navegación
+
+El catálogo mensual de CTAVAL se consulta desde `data/alto-valle-catalog.json` en SGI, con metadatos de archivos efectivamente verificados en CTAVAL. Los nuevos meses posteriores al índice se detectan mediante HEAD a la ruta mensual de CTAVAL; no se utiliza la API pública de listado de GitHub desde el Worker. Las cantidades y cálculos siguen saliendo exclusivamente del XLS operativo seleccionado.
+
+La barra lateral y Alto Valle usan la paleta clara, verde y gris de Contratos. El menú tiene cabecera compacta, grupos desplegables y un único espacio de desplazamiento.

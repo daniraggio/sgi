@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "repository": "daniraggio/CTAVAL",
+  "periods": [
+    {
+      "month": "2025_09",
+      "filename": "AVAL_2025_09.xls",
+      "size": 2606080
+    },
+    {
+      "month": "2025_10",
+      "filename": "AVAL_2025_10.xls",
+      "size": 2366976
+    },
+    {
+      "month": "2025_11",
+      "filename": "AVAL_2025_11.xls",
+      "size": 3089408
+    },
+    {
+      "month": "2025_12",
+      "filename": "AVAL_2025_12.xls",
+      "size": 4368896
+    },
+    {
+      "month": "2026_01",
+      "filename": "AVAL_2026_01.xls",
+      "size": 3089408
+    },
+    {
+      "month": "2026_02",
+      "filename": "AVAL_2026_02.xls",
+      "size": 3632640
+    },
+    {
+      "month": "2026_03",
+      "filename": "AVAL_2026_03.xls",
+      "size": 4240384
+    },
+    {
+      "month": "2026_04",
+      "filename": "AVAL_2026_04.xls",
+      "size": 3645440
+    },
+    {
+      "month": "2026_05",
+      "filename": "AVAL_2026_05.xls",
+      "size": 4022272
+    },
+    {
+      "month": "2026_06",
+      "filename": "AVAL_2026_06.xls",
+      "size": 3860992
+    },
+    {
+      "month": "2026_07",
+      "filename": "AVAL_2026_07.xls",
+      "size": 3444224
+    },
+    {
+      "month": "2026_08",
+      "filename": "AVAL_2026_08.xls",
+      "size": 4290560
+    },
+    {
+      "month": "2026_09",
+      "filename": "AVAL_2026_09.xls",
+      "size": 3794944
+    },
+    {
+      "month": "2026_10",
+      "filename": "AVAL_2026_10.xls",
+      "size": 2383360
+    },
+    {
+      "month": "2026_11",
+      "filename": "AVAL_2026_11.xls",
+      "size": 2015744
+    }
+  ]
+}
