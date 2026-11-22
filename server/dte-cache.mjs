@@ -1,6 +1,7 @@
 import {addMonthlyPower,historicalPowerBuyers,downloadMonthlyPower} from './dte-xlsx.mjs';
 import {fneeRate} from './billing.mjs';
 import {discoverDte,downloadDte,extractDte,completeDte,restoreStoredDte,validatePeriod} from './dte.mjs';
+import {effectiveDteRows,significant} from './dte-policy.mjs';
 const cachePath=(month,edition)=>'data/dte/'+month+'-'+edition+'.json';
 const cacheMatch=(p,m,e)=>p.month===m&&p.edition===e;
 export function createDteService({read,write,sharepoint,base,fetcher,extractor=extractDte,history=async()=>base.billingHistory||[]}){
@@ -11,7 +12,7 @@ export function createDteService({read,write,sharepoint,base,fetcher,extractor=e
   const {data}=await index(),selected={...data.applied};
   // Files generated before snapshot activation also carry verified DTE rows.
   for(const p of data.periods||[])if(!Object.hasOwn(data.applied||{},p.month)&&(p.cachePath||p.dashboard||processedInline(p))&&(!selected[p.month]||p.edition==='II'))selected[p.month]=p.edition;
-  let state;const periods=[];for(const [month,edition]of Object.entries(selected).sort(([a],[b])=>a.localeCompare(b))){const p=await period(data,month,edition);if(!p.dashboard)state??=JSON.parse((await read('data/state.json')).content);periods.push((p.dashboard?p:restoreStoredDte(p,state,base)).dashboard);}return {periods};
+  let state;const periods=[];for(const [month,edition]of Object.entries(selected).sort(([a],[b])=>a.localeCompare(b))){let p=await period(data,month,edition);if(edition==='II'){state??=JSON.parse((await read('data/state.json')).content);const first=await period(data,month,'I'),g1=first.generation||base.actualGeneration?.[month],g2=p.generation||p.dashboard?.generation;if(!g1||!g2)throw Error('Falta generación de ambas ediciones para aplicar los umbrales del DTE II.');const generation=Object.fromEntries(Object.keys(g1).map(k=>[k,significant(g2[k]-g1[k],'MWh')?g2[k]:g1[k]]));p=restoreStoredDte({...p,dashboard:null,rows:effectiveDteRows(first,p),billingRows:null,generation,method:(p.method||'')+'; sólo diferencias >1 MWh / >10 MWhrp respecto a DTE I'},state,base);}else if(!p.dashboard){state??=JSON.parse((await read('data/state.json')).content);p=restoreStoredDte({...p,generation:p.generation||base.actualGeneration?.[month]},state,base);}periods.push(p.dashboard);}return {periods};
  }
  async function prepare(month,edition,force=false,step=null){
   validatePeriod(month,edition);const first=await index(),entry=first.data.periods?.find(p=>cacheMatch(p,month,edition));

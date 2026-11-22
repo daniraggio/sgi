@@ -1,3 +1,5 @@
+import {adjustmentRows} from './dte-policy.mjs';
+import {billingChanges} from './billing-differences.mjs';
 import {billingCatalog,billingRows,billingXlsx,billingComparison} from './billing.mjs';
 import http from 'node:http';
 import {readFile,writeFile,rename,mkdir} from 'node:fs/promises';
@@ -23,7 +25,8 @@ export const server=http.createServer(async(req,res)=>{try{
   const data=JSON.parse(await readFile(resolve(root,'data/dte-billing.json'),'utf8'));
   if(url.pathname.endsWith('/catalog')){reply(res,200,{periods:billingCatalog(data)});return}
   const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await load(),rows=billingRows(state,data,month,edition);
-  const bytes=billingXlsx(rows,month,edition==='II'?billingComparison(state,data,month):null,{AET:state.societies?.AET?.businessUnit},JSON.parse(await readFile(resolve(root,'data/fnee-rates.json'),'utf8')));
+  const periods=data.periods.map(p=>p.month===month?{...p,billingRows:p.billingRows||billingRows(state,data,month,p.edition)}:p),first=periods.find(p=>p.month===month&&p.edition==='I'),second=periods.find(p=>p.month===month&&p.edition==='II');
+  const bytes=billingXlsx(edition==='II'?adjustmentRows(first,second):rows,month,edition==='II'?billingChanges(billingComparison(state,{periods},month)):null,{AET:state.societies?.AET?.businessUnit},JSON.parse(await readFile(resolve(root,'data/fnee-rates.json'),'utf8')),edition==='II');
   res.writeHead(200,{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'no-store'});res.end(bytes);return;
  }
  if(url.pathname==='/api/state'&&req.method==='GET'){const {state}=await load();reply(res,200,{...state,storage:remote?'github':'repository',repository:repo});return}

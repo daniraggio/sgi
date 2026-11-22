@@ -1,3 +1,6 @@
+import {billingPackage,savedAdjustments} from '../server/billing-downloads.mjs';
+import {adjustmentRows} from '../server/dte-policy.mjs';
+import {billingChanges} from '../server/billing-differences.mjs';
 import {publishedCatalog,savedBilling,savedComparison,publishBilling} from '../server/published-billing.mjs';
 import {createDteService} from '../server/dte-cache.mjs';
 import {SHAREPOINT} from '../server/dte.mjs';
@@ -11,7 +14,8 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
  if(url.pathname.startsWith('/api/')){
   if(!request.headers.get('oai-authenticated-user-id'))return json(401,{error:'Iniciá sesión para leer y guardar contratos.',chatGPTSignInPath:'/signin-with-chatgpt?return_to=%2F'});
   if(url.pathname==='/api/billing/published'&&request.method==='GET')return json(200,await publishedCatalog(options.publishedFetcher||fetch));
-  if(url.pathname==='/api/billing/saved'&&request.method==='GET'){const {bytes,filename}=await savedBilling(url.searchParams.get('month')||'',url.searchParams.get('edition')||'',options.publishedFetcher||fetch);return new Response(bytes,{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+filename+'"','Cache-Control':'private, no-store'}});}
+  if(url.pathname==='/api/billing/saved'&&request.method==='GET'){const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{bytes,filename}=await (edition==='II'?savedAdjustments(month,options.publishedFetcher||fetch):savedBilling(month,edition,options.publishedFetcher||fetch));return new Response(bytes,{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+filename+'"','Cache-Control':'private, no-store'}});}
+  if(url.pathname==='/api/billing/package'&&request.method==='GET'){const {bytes,filename}=await billingPackage(url.searchParams.get('month')||'',options.publishedFetcher||fetch);return new Response(bytes,{headers:{'Content-Type':filename.endsWith('.zip')?'application/zip':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+filename+'"','Cache-Control':'private, no-store'}});}
   if(url.pathname==='/api/billing/comparison'&&request.method==='GET')return json(200,await savedComparison(url.searchParams.get('month')||'',options.publishedFetcher||fetch));
   const binding=ctx.props?.CONNECTORS;
   const service=createDteService({base,fetcher:options.fetcher,history:async()=>JSON.parse((await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/billing-history.json',ref:'main'})).content).records,read:path=>invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path,ref:'main'}),write:(path,content,sha)=>invoke(binding,sha?'update_file':'create_file',{repository_full_name:REPOSITORY,branch:'main',path,content,message:'SGI: incorporar DTE y valores reales',...(sha?{sha}:{})}),sharepoint:(action,args)=>invoke(binding,action,args,SHAREPOINT)});
@@ -32,7 +36,7 @@ export function createHandler(assets,base={},options={}){return {async fetch(req
    const month=url.searchParams.get('month')||'',edition=url.searchParams.get('edition')||'',{state}=await stateFromGitHub(binding),{period,first}=await service.billing(month,edition,state),rows=period.billingRows||billingRows(state,{periods:[period]},month,edition);
    const comparison=edition==='II'?billingComparison(state,{periods:[{...first,rows:first.rows},{...period,rows:period.rows}]},month):null;
    const hasEnergy=Object.values(rows).flat().some(r=>r.unit==='MWh'),fundRates=hasEnergy?JSON.parse((await invoke(binding,'fetch_file',{repository_full_name:REPOSITORY,path:'data/fnee-rates.json',ref:'main'})).content):{};
-   return new Response(billingXlsx(rows,month,comparison,{AET:state.societies?.AET?.businessUnit},fundRates),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
+   return new Response(billingXlsx(edition==='II'?adjustmentRows({...first,billingRows:first.billingRows||billingRows(state,{periods:[first]},month,'I')},{...period,billingRows:rows}):rows,month,edition==='II'?billingChanges(comparison):comparison,{AET:state.societies?.AET?.businessUnit},fundRates,edition==='II'),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="Facturacion_'+month+'_DTE_'+edition+'.xlsx"','Cache-Control':'private, no-store'}});
   }
   if(url.pathname==='/api/state'&&request.method==='GET'){const {state}=await stateFromGitHub(binding);return json(200,{...state,storage:'github',repository:REPOSITORY})}
   if((/^\/api\/contracts(?:\/[^/]+)?$/.test(url.pathname)&&['POST','PUT','DELETE'].includes(request.method))||(url.pathname==='/api/generation'&&request.method==='PUT')){
